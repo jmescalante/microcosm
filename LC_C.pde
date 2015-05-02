@@ -37,6 +37,9 @@ void fallingWaterShow() {
   // 1. We ask if it is the first time
   if (fallingWater1AVez) fallingWater1AVez = fallingWaterStart();
 
+  // Apply the shader!!
+  // injectShader();
+
   // 2. We show the image
   image(capturada, 0, 0, anchoDisplay, altoDisplay);
   
@@ -148,6 +151,9 @@ void polvoxShow() {
   // 1. We ask if it is the first time
   if (polvox1AVez) polvox1AVez = polvoxStart();
   
+  // Apply the shader!!
+  // injectShader();
+
   // 2. We show the image
   if(ocultar) image(capturada, 0, 0, anchoDisplay, altoDisplay);
   

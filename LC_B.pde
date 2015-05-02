@@ -256,6 +256,9 @@ void stripeShow() {
   // 1. We ask if it is the first time
   if (stripe1AVez) stripe1AVez = stripeStart();
 
+  // Apply the shader!!
+  injectShader();
+
   // 2. We show the captured pic
   image(capturada, 0, 0, anchoDisplay, altoDisplay);
 
@@ -269,6 +272,7 @@ void stripeShow() {
       stripes[i] = b;
     }
   }
+
 }
 // ------------------------------------------------------------------------------------------------------------------
 
@@ -382,7 +386,6 @@ class Stripe {
         // 4. We put the 1st shape, finally!
         shapeMode(CORNERS);
         shape(Rect, x- anchoStripe, y, x +anchoStripe, y+(tamano[i]*sentido));
-
 
         // 5. WE put the 2nd Shape
         deseoY = map( y-(tamano[i]*sentido), 0, altoDisplay, 0, altoCaptura);

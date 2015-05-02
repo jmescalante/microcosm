@@ -22,6 +22,7 @@ Boolean kamindustries = false; // If we want to display the frameRate
 // Working variables
 int anchoCaptura, altoCaptura, anchoDisplay, altoDisplay;
 
+PShader mainShader;
 
 // -------------------------------------------------------------------------------------------
 void setup() {
@@ -38,13 +39,24 @@ void setup() {
 
   // 3. We load the PShapes for efficiency
   loadShapes();
+
+  frame.setResizable(true);
+  cc_toggle = 0; // rgb cc mode
+  fx_toggle = new int[6];
+  cf = addControlFrame("src window ctrl", 200,350);
+  mainShader = loadShader("shader.frag");
+
 }
 // -------------------------------------------------------------------------------------------
 void draw() {
+  
   if (!memoria)  background(0);
   // 1. We show the captured image
   //capturada.filter(THRESHOLD, 0.4);
   // image(capturada, 0, 0, anchoDisplay, altoDisplay);
+
+  // Apply the shader!!
+  injectShader();
 
   // 2. Live Cinema stages -->
   if (pixelation) pixelationShow();
@@ -59,6 +71,9 @@ void draw() {
   // X. We test the performance
   if (kamindustries) verificarFrameRate(); // To test performance
 
-    // 3. Mini Sample
+  // 3. Mini Sample
   if (miniCaptura) drawMiniSample();
+
+  resetShader();
+
 }

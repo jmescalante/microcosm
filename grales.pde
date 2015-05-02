@@ -97,8 +97,48 @@ void drawMiniSample() {
   
 }
 // █████████████████████████████████████████████████████████████████████████████████████████████████████████████████ 
+///////////////////////////////////////////////////////////////////////
+// U P D A T E   S H A D E R   V A R S
+///////////////////////////////////////////////////////////////////////
+void updateShaderVariables(){
+    mainShader.set("ui_red", ui_red);
+    mainShader.set("ui_green", ui_green);
+    mainShader.set("ui_blue", ui_blue);
+    mainShader.set("ui_brightness", ui_brightness);
+    mainShader.set("ui_contrast", ui_contrast);
+    mainShader.set("ui_hue", ui_hue);
+    mainShader.set("ui_saturation", ui_saturation);
+    mainShader.set("ui_sharpen", ui_sharpen);
+    mainShader.set("ui_niceContrast", ui_niceContrast);
+    // mainShader.set("ui_sortBlackVal", ui_sortBlackVal);
+    // mainShader.set("ui_sortBrightVal", ui_sortBrightVal);
+    // mainShader.set("ui_sortWhiteVal", ui_sortWhiteVal);
+    mainShader.set("ui_party", ui_party);
+    mainShader.set("cc_mode",   cc_toggle);
+    mainShader.set("brightness_mode",   fx_toggle[0]);
+    mainShader.set("contrast_mode",     fx_toggle[1]);
+    mainShader.set("hue_mode",          fx_toggle[2]);
+    mainShader.set("saturation_mode",   fx_toggle[3]);
+    mainShader.set("sharpening_mode",   fx_toggle[4]);
+    mainShader.set("niceContrast_mode", fx_toggle[5]);
+    mainShader.set("party_mode",   party_toggle);
+    mainShader.set("ttime", float(millis())*.0001);
 
+    update_sliders=false;
+}
 // █████████████████████████████████████████████████████████████████████████████████████████████████████████████████ 
+///////////////////////////////////////////////////////////////////////
+// I N J E C T   S H A D E R
+///////////////////////////////////////////////////////////////////////
+// Apply the shader to the PImage
+///////////////////////////////////////////////////////////////////////
+
+void injectShader(){
+  // update shader with slider settings
+  updateShaderVariables();
+  // apply the shader
+  shader(mainShader);
+}
 
 // █████████████████████████████████████████████████████████████████████████████████████████████████████████████████ 
 

@@ -23,6 +23,9 @@ void sporeGridShow() {
   // 1. We ask if it is the first time
   if (spore1AVez) spore1AVez = sporeStart();
 
+  // Apply the shader!!
+  // injectShader();
+
   //2. We show the image
   //image(capturada, 0, 0, anchoDisplay, altoDisplay);
 
@@ -145,6 +148,9 @@ Boolean sporeStart() {
 void sporeShow() {
   // 1. We ask if it is the first time /////////////////////////////////////////////////////////////////////////////
   if (spore1AVez) spore1AVez = sporeStart();
+
+  // Apply the shader!!
+  // injectShader();
 
   // 2. We show the image (no thank you, because we want this effect)...or should we? //////////////////////////////
   // image(capturada, 0, 0, anchoDisplay, altoDisplay);

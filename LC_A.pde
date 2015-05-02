@@ -240,7 +240,7 @@ Boolean mehStart() {
 void mehShow() {
   // 1. We ask if it is the first time
   if (meh1AVez) meh1AVez = mehStart();
-  
+
   //2. We show the image
   image(capturada, 0, 0, anchoDisplay, altoDisplay);
 }
