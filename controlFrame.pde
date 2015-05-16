@@ -109,23 +109,6 @@ public class ControlFrame extends PApplet {
     ///////////////////////////////////////////////////////////////////////
     // T O G G L E S
     ///////////////////////////////////////////////////////////////////////
-    // checkbox_cc = cp5.addCheckBox("checkbox_cc")
-    //                   .setPosition(cp5_mx-14-10, 70+cp5_my)
-    //                   .addItem("cc_mode", 0)
-    //                   .setItemsPerRow(1)
-    //                   .hideLabels()
-    //                   ;                      
-    // checkbox_fx = cp5.addCheckBox("checkbox_fx")
-    //                   .setPosition(cp5_mx-14-10, 110+cp5_my)
-    //                   .addItem("brightness_mode", 0)
-    //                   .addItem("contrast_mode", 0)
-    //                   .addItem("hue_mode", 0)
-    //                   .addItem("saturation_mode", 0)
-    //                   .addItem("sharpen_mode", 0)
-    //                   .addItem("niceContrast_mode", 0)
-    //                   .setItemsPerRow(1)
-    //                   .hideLabels()
-    //                   ;
     checkbox_sort = cp5.addCheckBox("checkbox_sort")
                       .setPosition(cp5_mx-14-10, 180+cp5_my)
                       .addItem("sort_black_mode", 0)
@@ -147,32 +130,6 @@ public class ControlFrame extends PApplet {
                       // .hideLabels()
                       ;                    
 
-    ///////////////////////////////////////////////////////////////////////
-    // C A P T U R E   C O N T R O L
-    ///////////////////////////////////////////////////////////////////////
-    // cp5.addSlider("x")
-    //   .setRange(0, 1920)
-    //   .setPosition(cp5_mx,10+cp5_my)
-    //   .setValue(pos_window_x_start)
-    //   ;
-    // cp5.addSlider("y")
-    //   .plugTo(parent,"x")
-    //   .setRange(0, 1200)
-    //   .setPosition(cp5_mx,20+cp5_my)
-    //   .setValue(pos_window_y_start)
-    //   ;
-
-    // cp5.addSlider("width")
-    //   .setRange(4, 1920)
-    //   .setValue(900)
-    //   .setPosition(cp5_mx,35+cp5_my)
-    //   ;
-    // cp5.addSlider("height")
-    //   .setRange(4, 1180)
-    //   .setValue(1100)
-    //   .setPosition(cp5_mx,45+cp5_my)
-    //   ;
-    
     ///////////////////////////////////////////////////////////////////////
     // R E S E T   B U T T O N S
     ///////////////////////////////////////////////////////////////////////
@@ -315,42 +272,6 @@ public class ControlFrame extends PApplet {
   }
 
   void controlEvent(ControlEvent theEvent) {
-    ///////////////////////////////////////////////////////////////////////
-    // Window Controls
-    ///////////////////////////////////////////////////////////////////////
-    // if (theEvent.isFrom(cp5.getController("x"))) {
-    //   capture_window_posX = round(theEvent.getController().getValue());
-    // }
-    // if (theEvent.isFrom(cp5.getController("y"))) {
-    //   capture_window_posY = round(theEvent.getController().getValue());
-    // }
-    // if (theEvent.isFrom(cp5.getController("width"))) {
-    //   // turn off sorting so it doesn't crash
-    //   sort_toggle[0] = 0;
-    //   sort_toggle[1] = 0;
-    //   sort_toggle[2] = 0;
-    //   sort_masterToggle = false;
-    //   checkbox_sort.setArrayValue(float(sort_toggle));
-    //   // make the width change
-    //   capture_window_width = round(theEvent.getController().getValue());
-    //   if (capture_window_width <= 4) capture_window_width = 4;
-    //   update_capture_window = true;
-    // }
-
-    // if (theEvent.isFrom(cp5.getController("height"))) {
-    //   // turn off sorting so it doesn't crash
-    //   sort_toggle[0] = 0;
-    //   sort_toggle[1] = 0;
-    //   sort_toggle[2] = 0;
-    //   sort_masterToggle = false;
-    //   checkbox_sort.setArrayValue(float(sort_toggle));
-    //   // make the height change
-    //   capture_window_height = round(theEvent.getController().getValue());
-    //   if (capture_window_height <= 4) capture_window_height = 4;
-    //   update_capture_window = true;
-    // }
-
-
 
     ///////////////////////////////////////////////////////////////////////
     // A D J U S T M E N T   S L I D E R S
@@ -463,63 +384,14 @@ public class ControlFrame extends PApplet {
       ui_party = 0.0;
     }
 
-
-    ///////////////////////////////////////////////////////////////////////
-    // F X   T O G G L E S
-    ///////////////////////////////////////////////////////////////////////
-    // if (theEvent.isFrom(checkbox_fx)) {
-    //   int size = checkbox_fx.getArrayValue().length;
-    //   fx_toggle = new int[size];
-
-    //   for (int i = 0; i < size; i++) {
-    //     int n = (int)checkbox_fx.getArrayValue()[i];
-    //     fx_toggle[n] = (int)checkbox_fx.getArrayValue()[n];
-    //   }
-
-    //   float value;
-    //   // update brightness
-    //   value = cp5.getController("brightness").getValue();
-    //   ui_brightness = value / 100.0;
-
-    //   // update contrast
-    //   value = cp5.getController("contrast").getValue();
-    //   if (fx_toggle[1]==0) ui_contrast = pow((100 + value) / 100, 2.0);
-    //   else if (fx_toggle[1]==1) ui_contrast = value / 100.0;
-      
-    //   // update the rest...
-    //   value = cp5.getController("hue").getValue(); 
-    //   ui_hue = value / 100.0;
-
-    //   value = cp5.getController("saturation").getValue(); 
-    //   ui_saturation = value / 100.0;
-    
-    //   value = cp5.getController("sharpen").getValue(); 
-    //   ui_sharpen = value / 100.0;
-    
-    //   value = cp5.getController("niceContrast").getValue(); 
-    //   ui_niceContrast = value / 100.0;
-    // }
-
     ///////////////////////////////////////////////////////////////////////
     // M O R E   T O G G L E S
     ///////////////////////////////////////////////////////////////////////
-    // if (theEvent.isFrom(checkbox_cc)) {
-    //     cc_toggle = (int)checkbox_cc.getArrayValue()[0];
-    //   }
     
     if (theEvent.isFrom(checkbox_party)) {
         party_toggle = (int)checkbox_party.getArrayValue()[0];
       }
 
-    // if (theEvent.isFrom(checkbox_fx)) {
-    //   int size = checkbox_fx.getArrayValue().length;
-    //   fx_toggle = new int[size];
-    //   for (int i=0; i<size; i++){
-    //     int n = (int)checkbox_fx.getArrayValue()[i];
-    //     fx_toggle[i] = n;
-    //   }
-    // }
-    
     if (theEvent.isFrom(checkbox_sort)) {
       int incoming_0 = (int)checkbox_sort.getArrayValue()[0];
       int incoming_1 = (int)checkbox_sort.getArrayValue()[1];
@@ -558,8 +430,6 @@ public class ControlFrame extends PApplet {
     }
 
   }
-
-
 
 
 

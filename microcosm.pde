@@ -57,40 +57,29 @@ void setup() {
 // -------------------------------------------------------------------------------------------
 void draw() {
 
-  // // testing not grabbing image in separate thread
-  // if (cam.available() == true) {
-  //   cam.read();
-  // }
-  // capturada = cam; // forward webcam to rest of code
-
-  
   if (!memoria)  background(0);
-  // 1. We show the captured image
-  //capturada.filter(THRESHOLD, 0.4);
-  // image(capturada, 0, 0, anchoDisplay, altoDisplay);
 
-  // Apply shader magic and output the main toDisplay PImage!!!
+  // Apply shader magic and output the color corrected toDisplay PImage!!!
   injectShader();
 
-  // 2. Live Cinema stages -->
-  //    Need this condition to wait until capture is working
+  // Live Cinema stages -->
+  // Need the first condition to wait until capture image has data to play with
   if (capturada.width > 0 && capturada.height > 0){ 
     if (pixelation) pixelationShow();
     if (pixelNation) pixelNationShow();
-    if (hairs) hairsShow(); // suuuper slow on my lil machine
+    if (hairs) hairsShow(); 
     if (stripe) stripeShow();
     if (fallingWater) fallingWaterShow();
     if (polvox) polvoxShow();
     if (meh) mehShow();
     if (spore) sporeShow();
     if (sporeGrid) sporeGridShow();
-    // X. We test the performance
+    
+    // Test the performance
     if (kamindustries) verificarFrameRate(); // To test performance
 
-    // 3. Mini Sample
+    // Mini Sample
     if (miniCaptura) drawMiniSample();
   }
-
-  resetShader();
 
 }

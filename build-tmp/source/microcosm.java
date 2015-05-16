@@ -81,41 +81,33 @@ public void setup() {
 // -------------------------------------------------------------------------------------------
 public void draw() {
 
-  // // testing not grabbing image in separate thread
-  // if (cam.available() == true) {
-  //   cam.read();
-  // }
-  // capturada = cam; // forward webcam to rest of code
-
   
   if (!memoria)  background(0);
-  // 1. We show the captured image
-  //capturada.filter(THRESHOLD, 0.4);
-  // image(capturada, 0, 0, anchoDisplay, altoDisplay);
 
-  // Apply the shader!!
+  // Apply shader magic and output the main toDisplay PImage!!!
   injectShader();
 
-  // 2. Live Cinema stages -->
-  //    Need this condition to wait until capture is working
+  // Live Cinema stages -->
+  // Need this condition to wait until capture is working
   if (capturada.width > 0 && capturada.height > 0){ 
     if (pixelation) pixelationShow();
     if (pixelNation) pixelNationShow();
-    if (hairs) hairsShow(); // suuuper slow on my lil machine
+    if (hairs) hairsShow(); 
     if (stripe) stripeShow();
     if (fallingWater) fallingWaterShow();
     if (polvox) polvoxShow();
     if (meh) mehShow();
     if (spore) sporeShow();
     if (sporeGrid) sporeGridShow();
-    // X. We test the performance
+    
+    // Test the performance
     if (kamindustries) verificarFrameRate(); // To test performance
 
-    // 3. Mini Sample
+    // Mini Sample
     if (miniCaptura) drawMiniSample();
   }
 
-  resetShader();
+  // resetShader();
 
 }
 // -------------------------------------------------------------------------------------------------------- //
@@ -160,7 +152,7 @@ public void pixelationShow() {
       // b. we ask if it is white
       // if ( pic.get( x, y ) > -1.1 ) {
       if ( toDisplay.get( x, y ) > -1.1f ) {
-        // fill(capturada.get( x, y));
+        // fill(capturada.get( x, y)); // alternative method-->gives colored X'es
         fill(toDisplay.get( x, y));
         // c. We re-map the values
         x = floor(map( x, 0, anchoCaptura, 0, width));
@@ -1380,8 +1372,6 @@ private ControlP5 cp5;
 
 ControlFrame cf;
 
-float SLIDER_SPEED = 0.01f;
-
 int capture_window_posX = 0;
 int capture_window_posY = 0;
 int capture_window_width = 1150;
@@ -1488,23 +1478,6 @@ public class ControlFrame extends PApplet {
     ///////////////////////////////////////////////////////////////////////
     // T O G G L E S
     ///////////////////////////////////////////////////////////////////////
-    // checkbox_cc = cp5.addCheckBox("checkbox_cc")
-    //                   .setPosition(cp5_mx-14-10, 70+cp5_my)
-    //                   .addItem("cc_mode", 0)
-    //                   .setItemsPerRow(1)
-    //                   .hideLabels()
-    //                   ;                      
-    // checkbox_fx = cp5.addCheckBox("checkbox_fx")
-    //                   .setPosition(cp5_mx-14-10, 110+cp5_my)
-    //                   .addItem("brightness_mode", 0)
-    //                   .addItem("contrast_mode", 0)
-    //                   .addItem("hue_mode", 0)
-    //                   .addItem("saturation_mode", 0)
-    //                   .addItem("sharpen_mode", 0)
-    //                   .addItem("niceContrast_mode", 0)
-    //                   .setItemsPerRow(1)
-    //                   .hideLabels()
-    //                   ;
     checkbox_sort = cp5.addCheckBox("checkbox_sort")
                       .setPosition(cp5_mx-14-10, 180+cp5_my)
                       .addItem("sort_black_mode", 0)
@@ -1526,32 +1499,6 @@ public class ControlFrame extends PApplet {
                       // .hideLabels()
                       ;                    
 
-    ///////////////////////////////////////////////////////////////////////
-    // C A P T U R E   C O N T R O L
-    ///////////////////////////////////////////////////////////////////////
-    // cp5.addSlider("x")
-    //   .setRange(0, 1920)
-    //   .setPosition(cp5_mx,10+cp5_my)
-    //   .setValue(pos_window_x_start)
-    //   ;
-    // cp5.addSlider("y")
-    //   .plugTo(parent,"x")
-    //   .setRange(0, 1200)
-    //   .setPosition(cp5_mx,20+cp5_my)
-    //   .setValue(pos_window_y_start)
-    //   ;
-
-    // cp5.addSlider("width")
-    //   .setRange(4, 1920)
-    //   .setValue(900)
-    //   .setPosition(cp5_mx,35+cp5_my)
-    //   ;
-    // cp5.addSlider("height")
-    //   .setRange(4, 1180)
-    //   .setValue(1100)
-    //   .setPosition(cp5_mx,45+cp5_my)
-    //   ;
-    
     ///////////////////////////////////////////////////////////////////////
     // R E S E T   B U T T O N S
     ///////////////////////////////////////////////////////////////////////
@@ -1694,42 +1641,6 @@ public class ControlFrame extends PApplet {
   }
 
   public void controlEvent(ControlEvent theEvent) {
-    ///////////////////////////////////////////////////////////////////////
-    // Window Controls
-    ///////////////////////////////////////////////////////////////////////
-    // if (theEvent.isFrom(cp5.getController("x"))) {
-    //   capture_window_posX = round(theEvent.getController().getValue());
-    // }
-    // if (theEvent.isFrom(cp5.getController("y"))) {
-    //   capture_window_posY = round(theEvent.getController().getValue());
-    // }
-    // if (theEvent.isFrom(cp5.getController("width"))) {
-    //   // turn off sorting so it doesn't crash
-    //   sort_toggle[0] = 0;
-    //   sort_toggle[1] = 0;
-    //   sort_toggle[2] = 0;
-    //   sort_masterToggle = false;
-    //   checkbox_sort.setArrayValue(float(sort_toggle));
-    //   // make the width change
-    //   capture_window_width = round(theEvent.getController().getValue());
-    //   if (capture_window_width <= 4) capture_window_width = 4;
-    //   update_capture_window = true;
-    // }
-
-    // if (theEvent.isFrom(cp5.getController("height"))) {
-    //   // turn off sorting so it doesn't crash
-    //   sort_toggle[0] = 0;
-    //   sort_toggle[1] = 0;
-    //   sort_toggle[2] = 0;
-    //   sort_masterToggle = false;
-    //   checkbox_sort.setArrayValue(float(sort_toggle));
-    //   // make the height change
-    //   capture_window_height = round(theEvent.getController().getValue());
-    //   if (capture_window_height <= 4) capture_window_height = 4;
-    //   update_capture_window = true;
-    // }
-
-
 
     ///////////////////////////////////////////////////////////////////////
     // A D J U S T M E N T   S L I D E R S
@@ -1842,63 +1753,14 @@ public class ControlFrame extends PApplet {
       ui_party = 0.0f;
     }
 
-
-    ///////////////////////////////////////////////////////////////////////
-    // F X   T O G G L E S
-    ///////////////////////////////////////////////////////////////////////
-    // if (theEvent.isFrom(checkbox_fx)) {
-    //   int size = checkbox_fx.getArrayValue().length;
-    //   fx_toggle = new int[size];
-
-    //   for (int i = 0; i < size; i++) {
-    //     int n = (int)checkbox_fx.getArrayValue()[i];
-    //     fx_toggle[n] = (int)checkbox_fx.getArrayValue()[n];
-    //   }
-
-    //   float value;
-    //   // update brightness
-    //   value = cp5.getController("brightness").getValue();
-    //   ui_brightness = value / 100.0;
-
-    //   // update contrast
-    //   value = cp5.getController("contrast").getValue();
-    //   if (fx_toggle[1]==0) ui_contrast = pow((100 + value) / 100, 2.0);
-    //   else if (fx_toggle[1]==1) ui_contrast = value / 100.0;
-      
-    //   // update the rest...
-    //   value = cp5.getController("hue").getValue(); 
-    //   ui_hue = value / 100.0;
-
-    //   value = cp5.getController("saturation").getValue(); 
-    //   ui_saturation = value / 100.0;
-    
-    //   value = cp5.getController("sharpen").getValue(); 
-    //   ui_sharpen = value / 100.0;
-    
-    //   value = cp5.getController("niceContrast").getValue(); 
-    //   ui_niceContrast = value / 100.0;
-    // }
-
     ///////////////////////////////////////////////////////////////////////
     // M O R E   T O G G L E S
     ///////////////////////////////////////////////////////////////////////
-    // if (theEvent.isFrom(checkbox_cc)) {
-    //     cc_toggle = (int)checkbox_cc.getArrayValue()[0];
-    //   }
     
     if (theEvent.isFrom(checkbox_party)) {
         party_toggle = (int)checkbox_party.getArrayValue()[0];
       }
 
-    // if (theEvent.isFrom(checkbox_fx)) {
-    //   int size = checkbox_fx.getArrayValue().length;
-    //   fx_toggle = new int[size];
-    //   for (int i=0; i<size; i++){
-    //     int n = (int)checkbox_fx.getArrayValue()[i];
-    //     fx_toggle[i] = n;
-    //   }
-    // }
-    
     if (theEvent.isFrom(checkbox_sort)) {
       int incoming_0 = (int)checkbox_sort.getArrayValue()[0];
       int incoming_1 = (int)checkbox_sort.getArrayValue()[1];
@@ -1937,8 +1799,6 @@ public class ControlFrame extends PApplet {
     }
 
   }
-
-
 
 
 
@@ -2259,9 +2119,8 @@ PImage capturada; // This is where we'll sotre all captured data.
 // Starting screen capture ---------------------------------------------------------
 public void iniciarScreenCapture() {
 
-  // get a a list of connected cameras
+  // Print a a list of connected cameras
   String[] cameras = Capture.list();
-  
   if (cameras.length == 0) {
     println("There are no cameras available for capture.");
     exit();
@@ -2271,9 +2130,8 @@ public void iniciarScreenCapture() {
       println(i + ": " + cameras[i]);
     }
     
-    // use the first camera from the list
-    // cam = new Capture(this, cameras[0]);
-    cam = new Capture(this, cameras[12]);
+    // cam = new Capture(this, cameras[0]); //CamTwist, the dSLR
+    cam = new Capture(this, cameras[12]); //Webcam on my Mac Air
     cam.start();     
   }
 
@@ -2281,6 +2139,7 @@ public void iniciarScreenCapture() {
   // 1. We start the blank image (recipient)
   capturada = createImage( anchoCaptura, altoCaptura, RGB );
   capturada = cam;
+
   // 2. We start the thread
   thread( "threadScreenCapture" );
 }
@@ -2289,24 +2148,24 @@ public void iniciarScreenCapture() {
 // \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 CAPTURE THREAD
 boolean pausar_captura = false; // This will always be turned off
 public void threadScreenCapture() {
+
   // 3. Feedback:
   println(">> ScreenCapture thread: ON");
-
-  // W1 create this object that retrieves constatly information
   // Robot robot; // (should be in the java class
 
-  // This loop will request a screen capture image
   while (!pausar_captura) {
 
-    // We insert some modulo magic, so it won't crash
+    // Update at 25fps (1000 milliseconds/40 = 25)
     if (millis()%40==0) {
+      cam.read();
+      capturada = cam; // forward webcam to rest of code
+
+
+      // NO MORE TRY AND CATCH SINCE WE ARENT SCREEN GRABBIN!!
       // try {
         
         // load image into capture object
-        // if (cam.available() == true) {
-          cam.read();
-        // }
-        capturada = cam; // forward webcam to rest of code
+
         // capturada = new PImage(0, 0, anchoCaptura, altoCaptura);
 
         // robot = new Robot(); // We start the robot
@@ -2318,6 +2177,7 @@ public void threadScreenCapture() {
       // capturada = new PImage(null);
         // println(">> HOLY, FATAL ERROR: --->"+e);
       // }
+
     } // <--- if ends
   } // <---- while ends
 } // <--- thread ends
