@@ -23,9 +23,6 @@ void sporeGridShow() {
   // 1. We ask if it is the first time
   if (spore1AVez) spore1AVez = sporeStart();
 
-  // Apply the shader!!
-  // injectShader();
-
   //2. We show the image
   //image(capturada, 0, 0, anchoDisplay, altoDisplay);
 
@@ -33,7 +30,7 @@ void sporeGridShow() {
   int reng = altoDisplay/7;
   int col = anchoDisplay/7;
   int cantLed = reng*col;
-  println( ">> Cant led = "+cantLed );
+  // println( ">> Cant led = "+cantLed );
   for (int i = 1; i < col; i++) {
     float interX = width/col;
     float x = interX*i;
@@ -46,8 +43,10 @@ void sporeGridShow() {
       int xc = int(map( x, 0, width, 0, anchoCaptura ));
       int yc = int(map( y, 0, height, 0, altoCaptura ));
 
-      color c = capturada.get( xc, yc );
-      stroke(red(c), green(c), blue(c), 150);
+      // color c = capturada.get( xc, yc );
+      color c = toDisplay.get( xc, yc );
+      float bright_val = red(c)+green(c)+blue(c);
+      stroke(red(c), green(c), blue(c), bright_val*2.);
       strokeWeight(6);
       strokeCap(SQUARE);
       noFill();
@@ -64,7 +63,8 @@ void sporeGridShow() {
     int xc = int(map( x, 0, width, 0, anchoCaptura ));
     int yc = int(map( y, 0, height, 0, altoCaptura ));
 
-    color c = capturada.get( xc, yc );
+    // color c = capturada.get( xc, yc );
+    color c = toDisplay.get( xc, yc );
 
     stroke(0);
     stroke(c);
@@ -99,7 +99,7 @@ Boolean sporeStart() {
   colLeds = anchoDisplay/intervaloDivisionLeds;
   cantLeds = rengLeds*colLeds;
 
-  // 2. We create new fake Arrays
+  // 2. We create new empty Arrays
   float [] xLedsT = new float[ cantLeds ];
   float [] xLedsDT = new float[ cantLeds ];
   float [] xLedsOT = new float[ cantLeds ];
@@ -164,19 +164,23 @@ void sporeShow() {
   // 3. We calculate the positions ////////////////////////////////////////////////////////////////////////////////
   it = 0; // it de items
   // a. we load the pixels
-  PImage capturadaT = capturada;
-  capturadaT.loadPixels();
+  // PImage capturadaT = capturada;
+  // capturadaT.loadPixels();
+
   for (int i = 0; i < colLeds; i++) {
     for (int j = 0; j < rengLeds; j++) {
-      // b. WE see which piel we want
-      int xc = int(map( xLedsO[it], 0, width, 0, anchoCaptura ));
-      int yc = int(map( yLedsO[it], 0, height, 0, altoCaptura ));
+      // b. WE see which pixel we want
+      int xc = int(map( xLedsO[it], 0, width, 0, anchoCaptura-1 ));
+      int yc = int(map( yLedsO[it], 0, height, 0, altoCaptura-1 ));
 
       // c. We get one pixel
       float pixel = 0.0;
-      if (saturationMode) pixel = brightness(capturadaT.pixels[ int(yc*capturadaT.width+xc) ]);
-      if (brightnessMode) pixel = brightness(capturadaT.pixels[ int(yc*capturadaT.width+xc) ]);
-      if (hueMode) pixel = hue(capturadaT.pixels[ int(yc*capturadaT.width+xc) ]);
+      // if (saturationMode) pixel = brightness(capturadaT.pixels[ int(yc*capturadaT.width+xc) ]);
+      if (saturationMode) pixel = brightness(toDisplay.pixels[ int(yc*toDisplay.width+xc) ]);
+      // if (brightnessMode) pixel = brightness(capturadaT.pixels[ int(yc*capturadaT.width+xc) ]);
+      if (brightnessMode) pixel = brightness(toDisplay.pixels[ int(yc*toDisplay.width+xc) ]);
+      // if (hueMode) pixel = hue(capturadaT.pixels[ int(yc*capturadaT.width+xc) ]);
+      if (hueMode) pixel = hue(toDisplay.pixels[ int(yc*toDisplay.width+xc) ]);
 
       // d. WE will translate this pixel Y value to height
       yLedsD[it] = map( pixel, 0, 255, 0, height );
@@ -199,7 +203,8 @@ void sporeShow() {
       // We get the color (TRICKY PART, the original one?) we get the color form the ORIGINAL coordiantes
       int xc = int(map( xLedsO[it], 0, width, 0, anchoCaptura ));
       int yc = int(map( yLedsO[it], 0, height, 0, altoCaptura ));
-      color c = capturada.get( xc, yc );
+      // color c = capturada.get( xc, yc );
+      color c = toDisplay.get( xc, yc );
 
       // We put the item, finally!
       stroke(red(c), green(c), blue(c), 150);

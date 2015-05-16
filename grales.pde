@@ -97,47 +97,70 @@ void drawMiniSample() {
   
 }
 // █████████████████████████████████████████████████████████████████████████████████████████████████████████████████ 
+
+///////////////////////////////////////////////////////////////////////
+// EASE IN
+///////////////////////////////////////////////////////////////////////
+float EaseIn(float _value, float _target, float _speed){
+  float x = _value;
+  float d = _target - _value;
+  x = d * _speed;
+  return x;
+}
+
+
 ///////////////////////////////////////////////////////////////////////
 // U P D A T E   S H A D E R   V A R S
 ///////////////////////////////////////////////////////////////////////
+float ease_speed = 0.01;
 void updateShaderVariables(){
-    mainShader.set("ui_red", ui_red);
-    mainShader.set("ui_green", ui_green);
-    mainShader.set("ui_blue", ui_blue);
-    mainShader.set("ui_brightness", ui_brightness);
-    mainShader.set("ui_contrast", ui_contrast);
-    mainShader.set("ui_hue", ui_hue);
-    mainShader.set("ui_saturation", ui_saturation);
-    mainShader.set("ui_sharpen", ui_sharpen);
-    mainShader.set("ui_niceContrast", ui_niceContrast);
-    // mainShader.set("ui_sortBlackVal", ui_sortBlackVal);
-    // mainShader.set("ui_sortBrightVal", ui_sortBrightVal);
-    // mainShader.set("ui_sortWhiteVal", ui_sortWhiteVal);
-    mainShader.set("ui_party", ui_party);
-    mainShader.set("cc_mode",   cc_toggle);
-    mainShader.set("brightness_mode",   fx_toggle[0]);
-    mainShader.set("contrast_mode",     fx_toggle[1]);
-    mainShader.set("hue_mode",          fx_toggle[2]);
-    mainShader.set("saturation_mode",   fx_toggle[3]);
-    mainShader.set("sharpening_mode",   fx_toggle[4]);
-    mainShader.set("niceContrast_mode", fx_toggle[5]);
-    mainShader.set("party_mode",   party_toggle);
-    mainShader.set("ttime", float(millis())*.0001);
 
-    update_sliders=false;
+
+  // easing animation for variables
+  ui_red += EaseIn(ui_red, ui_red_target, ease_speed);
+  ui_green += EaseIn(ui_green, ui_green_target, ease_speed);
+  ui_blue += EaseIn(ui_blue, ui_blue_target, ease_speed);
+  ui_brightness += EaseIn(ui_brightness, ui_brightness_target, ease_speed);
+  ui_contrast += EaseIn(ui_contrast, ui_contrast_target, ease_speed);
+  ui_hue += EaseIn(ui_hue, ui_hue_target, ease_speed);
+  ui_saturation += EaseIn(ui_saturation, ui_saturation_target, ease_speed);
+  ui_sharpen += EaseIn(ui_sharpen, ui_sharpen_target, ease_speed);
+  ui_niceContrast += EaseIn(ui_niceContrast, ui_niceContrast_target, ease_speed);
+
+  // set shader vaiables 
+  mainShader.set("ui_red", ui_red);
+  mainShader.set("ui_green", ui_green);
+  mainShader.set("ui_blue", ui_blue);
+  mainShader.set("ui_brightness", ui_brightness);
+  mainShader.set("ui_contrast", ui_contrast);
+  mainShader.set("ui_hue", ui_hue);
+  mainShader.set("ui_saturation", ui_saturation);
+  mainShader.set("ui_sharpen", ui_sharpen);
+  mainShader.set("ui_niceContrast", ui_niceContrast);
+  // mainShader.set("ui_sortBlackVal", ui_sortBlackVal);
+  // mainShader.set("ui_sortBrightVal", ui_sortBrightVal);
+  // mainShader.set("ui_sortWhiteVal", ui_sortWhiteVal);
+  mainShader.set("ui_party", ui_party);
+  mainShader.set("ttime", float(millis())*.0001);
+
+  update_sliders=false;
 }
-// █████████████████████████████████████████████████████████████████████████████████████████████████████████████████ 
+
 ///////////////////////////////////////////////////////////////////////
 // I N J E C T   S H A D E R
 ///////////////////////////////////////////////////////////////////////
-// Apply the shader to the PImage
-///////////////////////////////////////////////////////////////////////
 
 void injectShader(){
-  // update shader with slider settings
+  // update shader with slider settings and turn it on
   updateShaderVariables();
-  // apply the shader
-  shader(mainShader);
+
+  gl.beginDraw();
+    gl.shader(mainShader);
+    gl.image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  gl.endDraw();
+
+  // send color corrected image to glitch functions
+  toDisplay = gl.get();
 }
 
 // █████████████████████████████████████████████████████████████████████████████████████████████████████████████████ 

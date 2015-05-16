@@ -4,6 +4,7 @@ import processing.event.*;
 import processing.opengl.*; 
 
 import controlP5.*; 
+import processing.video.*; 
 import java.awt.Frame; 
 import java.awt.BorderLayout; 
 import java.awt.Robot; 
@@ -46,32 +47,46 @@ Boolean kamindustries = false; // If we want to display the frameRate
 int anchoCaptura, altoCaptura, anchoDisplay, altoDisplay;
 
 PShader mainShader;
+PGraphics gl;
+PImage toDisplay;
 
 // -------------------------------------------------------------------------------------------
 public void setup() {
   // 1. Size operations
   // iniciarStage(640, 360, 1280, 720); // All captures and sizes operations are set up
   //  iniciarStage(640, 360, 640, 360); // All captures and sizes operations are set up
-  iniciarStage(1280, 720, 1280, 720); 
+  // iniciarStage(1280, 720, 1280, 720); 
+  iniciarStage(1056, 704, 1056, 704); 
   size(anchoDisplay, altoDisplay, P2D);
+  
   /*NOTES:
    Captured: 720p/2 Render: 720p(FPS=  almost 60 fps  )
    */
   // 2. We start the screen capture (using threading) operations
   iniciarScreenCapture();
 
+
   // 3. We load the PShapes for efficiency
   loadShapes();
 
+  gl = createGraphics(anchoDisplay, altoDisplay, P3D);
+  toDisplay = createImage(anchoDisplay, altoDisplay, RGB);
+
   frame.setResizable(true);
-  cc_toggle = 0; // rgb cc mode
-  fx_toggle = new int[6];
+  // cc_toggle = 0; // rgb cc mode
   cf = addControlFrame("src window ctrl", 200,350);
   mainShader = loadShader("shader.frag");
 
 }
 // -------------------------------------------------------------------------------------------
 public void draw() {
+
+  // // testing not grabbing image in separate thread
+  // if (cam.available() == true) {
+  //   cam.read();
+  // }
+  // capturada = cam; // forward webcam to rest of code
+
   
   if (!memoria)  background(0);
   // 1. We show the captured image
@@ -82,20 +97,23 @@ public void draw() {
   injectShader();
 
   // 2. Live Cinema stages -->
-  if (pixelation) pixelationShow();
-  if (pixelNation) pixelNationShow();
-  if (hairs) hairsShow();
-  if (stripe) stripeShow();
-  if (fallingWater) fallingWaterShow();
-  if (polvox) polvoxShow();
-  if (meh) mehShow();
-  if (spore) sporeShow();
-  if (sporeGrid) sporeGridShow();
-  // X. We test the performance
-  if (kamindustries) verificarFrameRate(); // To test performance
+  //    Need this condition to wait until capture is working
+  if (capturada.width > 0 && capturada.height > 0){ 
+    if (pixelation) pixelationShow();
+    if (pixelNation) pixelNationShow();
+    if (hairs) hairsShow(); // suuuper slow on my lil machine
+    if (stripe) stripeShow();
+    if (fallingWater) fallingWaterShow();
+    if (polvox) polvoxShow();
+    if (meh) mehShow();
+    if (spore) sporeShow();
+    if (sporeGrid) sporeGridShow();
+    // X. We test the performance
+    if (kamindustries) verificarFrameRate(); // To test performance
 
-  // 3. Mini Sample
-  if (miniCaptura) drawMiniSample();
+    // 3. Mini Sample
+    if (miniCaptura) drawMiniSample();
+  }
 
   resetShader();
 
@@ -125,9 +143,11 @@ public void pixelationShow() {
   if (pixelation1AVez) pixelation1AVez = pixelationStart();
 
   // 2. We will apply some threshold to the image
-  PImage pic = capturada;
+  // PImage pic = capturada;
+  // PImage pic = toDisplay;
   //pic.filter(THRESHOLD, map(mouseX, 0, width, 0, 1));
-  pic.filter(THRESHOLD, random(0.6f, 0.8f));
+  // pic.filter(THRESHOLD, random(0.6, 0.8));
+  toDisplay.filter(THRESHOLD, random(0.6f, 0.8f));
   //capturada.filter(GRAY);
 
 
@@ -138,8 +158,10 @@ public void pixelationShow() {
       int x = floor(map( i, 0, pixelationResX, 0, anchoCaptura ));
       int y = floor(map( j, 0, pixelationResY, 0, altoCaptura));
       // b. we ask if it is white
-      if ( pic.get( x, y ) > -1.1f ) {
-        fill(capturada.get( x, y));
+      // if ( pic.get( x, y ) > -1.1 ) {
+      if ( toDisplay.get( x, y ) > -1.1f ) {
+        // fill(capturada.get( x, y));
+        fill(toDisplay.get( x, y));
         // c. We re-map the values
         x = floor(map( x, 0, anchoCaptura, 0, width));
         y = floor(map( y, 0, altoCaptura, 0, height ));
@@ -257,7 +279,8 @@ public void pixelNationShow() {
   if (pixelNation1AVez) pixelNation1AVez = pixelNationStart();
 
   // 0. We place the image
-  image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  // image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  image(toDisplay, 0, 0, anchoDisplay, altoDisplay);
 
   // Mostrar operaciones de curtain
   curtainOperations();
@@ -278,7 +301,8 @@ public void pixelNationShow() {
       float alto = height/pixelNationResY;
 
       // c. we get the color
-      int c = capturada.get( x, y);
+      // color c = capturada.get( x, y);
+      int c = toDisplay.get( x, y);
       fill(c);
 
       // c. We re-map the values
@@ -344,7 +368,8 @@ public void mehShow() {
   if (meh1AVez) meh1AVez = mehStart();
 
   //2. We show the image
-  image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  // image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  image(toDisplay, 0, 0, anchoDisplay, altoDisplay);
 }
 // -------------------------------------------------------------------------------------------------------- //
 //----------------------- Subtle video effects for live cinema -------------------------------------------- //
@@ -422,7 +447,8 @@ public void hairsShow() {
   if (hairs1AVez) hairs1AVez = hairsStart();
 
   // 2. We show the captured pic
-  image(capturada, 0, 0, width, height);
+  // image(capturada, 0, 0, width, height);
+  image(toDisplay, 0, 0, width, height);
 
   // 2. We assign a position if the hair is available to assign, if no, well... no :(
   for (int i = 0; i < cabellosMax; i++) {
@@ -470,7 +496,8 @@ public void hairsShow() {
 
       //  propiedades de dibujo
       strokeWeight(random(1));
-      int c = capturada.get( floor(hairsX[i]), floor(hairsY[i]) );
+      // color c = capturada.get( floor(hairsX[i]), floor(hairsY[i]) );
+      int c = toDisplay.get( floor(hairsX[i]), floor(hairsY[i]) );
       fill(red(c), green(c), blue(c), hairsAlpha[i]);
       stroke(red(c), green(c), blue(c), hairsAlpha[i]);
       //stroke(255, 0, 0, hairsAlpha[i]);
@@ -544,11 +571,13 @@ public int [] asignarNuevaPosicion() {
     float yAzar = floor(random(capturada.height));
 
     // b. we load the pixels
-    PImage capturadaT = capturada;
-    capturadaT.loadPixels();
+    // PImage capturadaT = capturada;
+    // PImage capturadaT = toDisplay;
+    // capturadaT.loadPixels();
 
     // c. We get one pixel
-    float pixel = brightness(capturadaT.pixels[ PApplet.parseInt(yAzar*capturadaT.width+xAzar) ]);
+    // float pixel = brightness(capturadaT.pixels[ int(yAzar*capturadaT.width+xAzar) ]);
+    float pixel = brightness(capturada.pixels[ PApplet.parseInt(yAzar*toDisplay.width+xAzar) ]);
 
     // d We ask if it is black enough
     if (pixel < limiteNegro) {
@@ -561,7 +590,7 @@ public int [] asignarNuevaPosicion() {
     }
 
     // Z
-    capturadaT.updatePixels();
+    // capturadaT.updatePixels();
   }
   // 4. Values are returnes
   return posiciones;
@@ -608,7 +637,8 @@ public void stripeShow() {
   injectShader();
 
   // 2. We show the captured pic
-  image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  // image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  image(toDisplay, 0, 0, anchoDisplay, altoDisplay);
 
   // 3. We show the stripes
   for (int i = 0; i < cantidadStripes; i++) {
@@ -725,7 +755,8 @@ class Stripe {
         // 2. We get the color for the first bar
         float deseoX = map( x, 0, anchoDisplay, 0, anchoCaptura );
         float deseoY = map( y+(tamano[i]*sentido), 0, altoDisplay, 0, altoCaptura);
-        c = capturada.get(floor(deseoX), floor(deseoY));
+        // c = capturada.get(floor(deseoX), floor(deseoY));
+        c = toDisplay.get(floor(deseoX), floor(deseoY));
 
         // 3. We set the display properties
         noStroke();
@@ -737,7 +768,8 @@ class Stripe {
 
         // 5. WE put the 2nd Shape
         deseoY = map( y-(tamano[i]*sentido), 0, altoDisplay, 0, altoCaptura);
-        c = capturada.get(floor(deseoX), floor(deseoY));
+        // c = capturada.get(floor(deseoX), floor(deseoY));
+        c = toDisplay.get(floor(deseoX), floor(deseoY));
         fill(c);
 
         // 6. We put the second shape
@@ -841,7 +873,8 @@ public void fallingWaterShow() {
   // injectShader();
 
   // 2. We show the image
-  image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  // image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  image(toDisplay, 0, 0, anchoDisplay, altoDisplay);
   
   //  //We start Cycling
   for (int i = 0; i < densidadWaterFall/1; i++) {
@@ -860,7 +893,8 @@ public void fallingWaterShow() {
     // e. We will get a color data from an image
     int deseoX = floor(map(i, 0, densidadWaterFall, 0, capturada.width));
     int deseoY = floor(map(yWater[i], 0, height, 0, capturada.height));
-    int c = capturada.get(deseoX, deseoY);
+    // color c = capturada.get(deseoX, deseoY);
+    int c = toDisplay.get(deseoX, deseoY);
 
     // f. We draw something upside down
     noStroke();
@@ -955,7 +989,8 @@ public void polvoxShow() {
   // injectShader();
 
   // 2. We show the image
-  if(ocultar) image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  // if(ocultar) image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  if(ocultar) image(toDisplay, 0, 0, anchoDisplay, altoDisplay);
   
   // 1. Mostramos y calculamos los surcos
   for (int i = 0; i < cantidadSurcos; i++) {
@@ -1045,7 +1080,8 @@ class Dust {
     //this.angulo = 45;
     this.angulo = angulo;
     this.aumentoX = 0;
-    this.c = capturada.get( PApplet.parseInt(x), PApplet.parseInt(y) );
+    // this.c = capturada.get( int(x), int(y) );
+    this.c = toDisplay.get( PApplet.parseInt(x), PApplet.parseInt(y) );
    // this.c = color(random(255), random(255), 0);
     this.alpha = 255;
     this.alpha= alphaInicio;
@@ -1095,7 +1131,8 @@ class Dust {
     // 3. Shape alternative test
     int deseoX = floor(map(x, 0, anchoDisplay, 0, anchoCaptura));
     int deseoY = floor(map(y, 0, altoDisplay, 0, altoCaptura));
-    c = capturada.get( deseoX, deseoY) ;
+    // c = capturada.get( deseoX, deseoY) ;
+    c = toDisplay.get( deseoX, deseoY) ;
     fill(red(c), green(c), blue(c), alpha);
 
     noStroke();
@@ -1142,9 +1179,6 @@ public void sporeGridShow() {
   // 1. We ask if it is the first time
   if (spore1AVez) spore1AVez = sporeStart();
 
-  // Apply the shader!!
-  // injectShader();
-
   //2. We show the image
   //image(capturada, 0, 0, anchoDisplay, altoDisplay);
 
@@ -1152,7 +1186,7 @@ public void sporeGridShow() {
   int reng = altoDisplay/7;
   int col = anchoDisplay/7;
   int cantLed = reng*col;
-  println( ">> Cant led = "+cantLed );
+  // println( ">> Cant led = "+cantLed );
   for (int i = 1; i < col; i++) {
     float interX = width/col;
     float x = interX*i;
@@ -1165,8 +1199,10 @@ public void sporeGridShow() {
       int xc = PApplet.parseInt(map( x, 0, width, 0, anchoCaptura ));
       int yc = PApplet.parseInt(map( y, 0, height, 0, altoCaptura ));
 
-      int c = capturada.get( xc, yc );
-      stroke(red(c), green(c), blue(c), 150);
+      // color c = capturada.get( xc, yc );
+      int c = toDisplay.get( xc, yc );
+      float bright_val = red(c)+green(c)+blue(c);
+      stroke(red(c), green(c), blue(c), bright_val*2.f);
       strokeWeight(6);
       strokeCap(SQUARE);
       noFill();
@@ -1183,7 +1219,8 @@ public void sporeGridShow() {
     int xc = PApplet.parseInt(map( x, 0, width, 0, anchoCaptura ));
     int yc = PApplet.parseInt(map( y, 0, height, 0, altoCaptura ));
 
-    int c = capturada.get( xc, yc );
+    // color c = capturada.get( xc, yc );
+    int c = toDisplay.get( xc, yc );
 
     stroke(0);
     stroke(c);
@@ -1218,7 +1255,7 @@ public Boolean sporeStart() {
   colLeds = anchoDisplay/intervaloDivisionLeds;
   cantLeds = rengLeds*colLeds;
 
-  // 2. We create new fake Arrays
+  // 2. We create new empty Arrays
   float [] xLedsT = new float[ cantLeds ];
   float [] xLedsDT = new float[ cantLeds ];
   float [] xLedsOT = new float[ cantLeds ];
@@ -1283,19 +1320,23 @@ public void sporeShow() {
   // 3. We calculate the positions ////////////////////////////////////////////////////////////////////////////////
   it = 0; // it de items
   // a. we load the pixels
-  PImage capturadaT = capturada;
-  capturadaT.loadPixels();
+  // PImage capturadaT = capturada;
+  // capturadaT.loadPixels();
+
   for (int i = 0; i < colLeds; i++) {
     for (int j = 0; j < rengLeds; j++) {
-      // b. WE see which piel we want
-      int xc = PApplet.parseInt(map( xLedsO[it], 0, width, 0, anchoCaptura ));
-      int yc = PApplet.parseInt(map( yLedsO[it], 0, height, 0, altoCaptura ));
+      // b. WE see which pixel we want
+      int xc = PApplet.parseInt(map( xLedsO[it], 0, width, 0, anchoCaptura-1 ));
+      int yc = PApplet.parseInt(map( yLedsO[it], 0, height, 0, altoCaptura-1 ));
 
       // c. We get one pixel
       float pixel = 0.0f;
-      if (saturationMode) pixel = brightness(capturadaT.pixels[ PApplet.parseInt(yc*capturadaT.width+xc) ]);
-      if (brightnessMode) pixel = brightness(capturadaT.pixels[ PApplet.parseInt(yc*capturadaT.width+xc) ]);
-      if (hueMode) pixel = hue(capturadaT.pixels[ PApplet.parseInt(yc*capturadaT.width+xc) ]);
+      // if (saturationMode) pixel = brightness(capturadaT.pixels[ int(yc*capturadaT.width+xc) ]);
+      if (saturationMode) pixel = brightness(toDisplay.pixels[ PApplet.parseInt(yc*toDisplay.width+xc) ]);
+      // if (brightnessMode) pixel = brightness(capturadaT.pixels[ int(yc*capturadaT.width+xc) ]);
+      if (brightnessMode) pixel = brightness(toDisplay.pixels[ PApplet.parseInt(yc*toDisplay.width+xc) ]);
+      // if (hueMode) pixel = hue(capturadaT.pixels[ int(yc*capturadaT.width+xc) ]);
+      if (hueMode) pixel = hue(toDisplay.pixels[ PApplet.parseInt(yc*toDisplay.width+xc) ]);
 
       // d. WE will translate this pixel Y value to height
       yLedsD[it] = map( pixel, 0, 255, 0, height );
@@ -1318,7 +1359,8 @@ public void sporeShow() {
       // We get the color (TRICKY PART, the original one?) we get the color form the ORIGINAL coordiantes
       int xc = PApplet.parseInt(map( xLedsO[it], 0, width, 0, anchoCaptura ));
       int yc = PApplet.parseInt(map( yLedsO[it], 0, height, 0, altoCaptura ));
-      int c = capturada.get( xc, yc );
+      // color c = capturada.get( xc, yc );
+      int c = toDisplay.get( xc, yc );
 
       // We put the item, finally!
       stroke(red(c), green(c), blue(c), 150);
@@ -1337,6 +1379,9 @@ public void sporeShow() {
 private ControlP5 cp5;
 
 ControlFrame cf;
+
+float SLIDER_SPEED = 0.01f;
+
 int capture_window_posX = 0;
 int capture_window_posY = 0;
 int capture_window_width = 1150;
@@ -1359,9 +1404,24 @@ int ui_sortBlackVal = -10000000;
 int ui_sortBrightVal = 60;
 int ui_sortWhiteVal = -6000000;
 float ui_party = 0.f;
+
+float ui_red_target = 0.f;
+float ui_green_target = 0.f;
+float ui_blue_target = 0.f;
+float ui_brightness_target = 0.f;
+float ui_contrast_target = 0.f;
+float ui_hue_target = 0.f;
+float ui_saturation_target = 0.f;
+float ui_sharpen_target = 0.f;
+float ui_niceContrast_target = 0.f;
+int ui_sortBlackVal_target = -10000000;
+int ui_sortBrightVal_target = 60;
+int ui_sortWhiteVal_target = -6000000;
+float ui_party_target = 0.f;
+
 int update_shader = 0;
 
-CheckBox checkbox_cc;
+// CheckBox checkbox_cc;
 CheckBox checkbox_fx;
 CheckBox checkbox_sort;
 CheckBox checkbox_party;
@@ -1369,8 +1429,8 @@ CheckBox checkbox_updateShader;
 int cp5_mx = 30;
 int cp5_my = 10;
 
-int cc_toggle; 
-int[] fx_toggle; 
+// int cc_toggle; 
+// int[] fx_toggle; 
 int[] sort_toggle;
 boolean sort_masterToggle = false;
 int party_toggle;
@@ -1428,23 +1488,23 @@ public class ControlFrame extends PApplet {
     ///////////////////////////////////////////////////////////////////////
     // T O G G L E S
     ///////////////////////////////////////////////////////////////////////
-    checkbox_cc = cp5.addCheckBox("checkbox_cc")
-                      .setPosition(cp5_mx-14-10, 70+cp5_my)
-                      .addItem("cc_mode", 0)
-                      .setItemsPerRow(1)
-                      .hideLabels()
-                      ;                      
-    checkbox_fx = cp5.addCheckBox("checkbox_fx")
-                      .setPosition(cp5_mx-14-10, 110+cp5_my)
-                      .addItem("brightness_mode", 0)
-                      .addItem("contrast_mode", 0)
-                      .addItem("hue_mode", 0)
-                      .addItem("saturation_mode", 0)
-                      .addItem("sharpen_mode", 0)
-                      .addItem("niceContrast_mode", 0)
-                      .setItemsPerRow(1)
-                      .hideLabels()
-                      ;
+    // checkbox_cc = cp5.addCheckBox("checkbox_cc")
+    //                   .setPosition(cp5_mx-14-10, 70+cp5_my)
+    //                   .addItem("cc_mode", 0)
+    //                   .setItemsPerRow(1)
+    //                   .hideLabels()
+    //                   ;                      
+    // checkbox_fx = cp5.addCheckBox("checkbox_fx")
+    //                   .setPosition(cp5_mx-14-10, 110+cp5_my)
+    //                   .addItem("brightness_mode", 0)
+    //                   .addItem("contrast_mode", 0)
+    //                   .addItem("hue_mode", 0)
+    //                   .addItem("saturation_mode", 0)
+    //                   .addItem("sharpen_mode", 0)
+    //                   .addItem("niceContrast_mode", 0)
+    //                   .setItemsPerRow(1)
+    //                   .hideLabels()
+    //                   ;
     checkbox_sort = cp5.addCheckBox("checkbox_sort")
                       .setPosition(cp5_mx-14-10, 180+cp5_my)
                       .addItem("sort_black_mode", 0)
@@ -1469,28 +1529,28 @@ public class ControlFrame extends PApplet {
     ///////////////////////////////////////////////////////////////////////
     // C A P T U R E   C O N T R O L
     ///////////////////////////////////////////////////////////////////////
-    cp5.addSlider("x")
-      .setRange(0, 1920)
-      .setPosition(cp5_mx,10+cp5_my)
-      .setValue(pos_window_x_start)
-      ;
-    cp5.addSlider("y")
-      .plugTo(parent,"x")
-      .setRange(0, 1200)
-      .setPosition(cp5_mx,20+cp5_my)
-      .setValue(pos_window_y_start)
-      ;
+    // cp5.addSlider("x")
+    //   .setRange(0, 1920)
+    //   .setPosition(cp5_mx,10+cp5_my)
+    //   .setValue(pos_window_x_start)
+    //   ;
+    // cp5.addSlider("y")
+    //   .plugTo(parent,"x")
+    //   .setRange(0, 1200)
+    //   .setPosition(cp5_mx,20+cp5_my)
+    //   .setValue(pos_window_y_start)
+    //   ;
 
-    cp5.addSlider("width")
-      .setRange(4, 1920)
-      .setValue(900)
-      .setPosition(cp5_mx,35+cp5_my)
-      ;
-    cp5.addSlider("height")
-      .setRange(4, 1180)
-      .setValue(1100)
-      .setPosition(cp5_mx,45+cp5_my)
-      ;
+    // cp5.addSlider("width")
+    //   .setRange(4, 1920)
+    //   .setValue(900)
+    //   .setPosition(cp5_mx,35+cp5_my)
+    //   ;
+    // cp5.addSlider("height")
+    //   .setRange(4, 1180)
+    //   .setValue(1100)
+    //   .setPosition(cp5_mx,45+cp5_my)
+    //   ;
     
     ///////////////////////////////////////////////////////////////////////
     // R E S E T   B U T T O N S
@@ -1520,12 +1580,12 @@ public class ControlFrame extends PApplet {
         .setSize(9,9)
         .setLabelVisible(false)
         ;
-    cp5.addButton("hue_reset")
+    cp5.addButton("saturation_reset")
         .setPosition(PApplet.parseInt(cp5_mx-12),130+cp5_my)
         .setSize(9,9)
         .setLabelVisible(false)
         ;
-    cp5.addButton("saturation_reset")
+    cp5.addButton("hue_reset")
         .setPosition(PApplet.parseInt(cp5_mx-12),140+cp5_my)
         .setSize(9,9)
         .setLabelVisible(false)
@@ -1589,12 +1649,12 @@ public class ControlFrame extends PApplet {
       .setRange(-100, 100.0f)
       .setValue(0.0f)
       ;
-    cp5.addSlider("hue")
+    cp5.addSlider("saturation")
       .setPosition(cp5_mx,130+cp5_my)
       .setRange(-100, 100.0f)
       .setValue(0.0f)
       ;
-    cp5.addSlider("saturation")
+    cp5.addSlider("hue")
       .setPosition(cp5_mx,140+cp5_my)
       .setRange(-100, 100.0f)
       .setValue(0.0f)
@@ -1637,37 +1697,37 @@ public class ControlFrame extends PApplet {
     ///////////////////////////////////////////////////////////////////////
     // Window Controls
     ///////////////////////////////////////////////////////////////////////
-    if (theEvent.isFrom(cp5.getController("x"))) {
-      capture_window_posX = round(theEvent.getController().getValue());
-    }
-    if (theEvent.isFrom(cp5.getController("y"))) {
-      capture_window_posY = round(theEvent.getController().getValue());
-    }
-    if (theEvent.isFrom(cp5.getController("width"))) {
-      // turn off sorting so it doesn't crash
-      sort_toggle[0] = 0;
-      sort_toggle[1] = 0;
-      sort_toggle[2] = 0;
-      sort_masterToggle = false;
-      checkbox_sort.setArrayValue(PApplet.parseFloat(sort_toggle));
-      // make the width change
-      capture_window_width = round(theEvent.getController().getValue());
-      if (capture_window_width <= 4) capture_window_width = 4;
-      update_capture_window = true;
-    }
+    // if (theEvent.isFrom(cp5.getController("x"))) {
+    //   capture_window_posX = round(theEvent.getController().getValue());
+    // }
+    // if (theEvent.isFrom(cp5.getController("y"))) {
+    //   capture_window_posY = round(theEvent.getController().getValue());
+    // }
+    // if (theEvent.isFrom(cp5.getController("width"))) {
+    //   // turn off sorting so it doesn't crash
+    //   sort_toggle[0] = 0;
+    //   sort_toggle[1] = 0;
+    //   sort_toggle[2] = 0;
+    //   sort_masterToggle = false;
+    //   checkbox_sort.setArrayValue(float(sort_toggle));
+    //   // make the width change
+    //   capture_window_width = round(theEvent.getController().getValue());
+    //   if (capture_window_width <= 4) capture_window_width = 4;
+    //   update_capture_window = true;
+    // }
 
-    if (theEvent.isFrom(cp5.getController("height"))) {
-      // turn off sorting so it doesn't crash
-      sort_toggle[0] = 0;
-      sort_toggle[1] = 0;
-      sort_toggle[2] = 0;
-      sort_masterToggle = false;
-      checkbox_sort.setArrayValue(PApplet.parseFloat(sort_toggle));
-      // make the height change
-      capture_window_height = round(theEvent.getController().getValue());
-      if (capture_window_height <= 4) capture_window_height = 4;
-      update_capture_window = true;
-    }
+    // if (theEvent.isFrom(cp5.getController("height"))) {
+    //   // turn off sorting so it doesn't crash
+    //   sort_toggle[0] = 0;
+    //   sort_toggle[1] = 0;
+    //   sort_toggle[2] = 0;
+    //   sort_masterToggle = false;
+    //   checkbox_sort.setArrayValue(float(sort_toggle));
+    //   // make the height change
+    //   capture_window_height = round(theEvent.getController().getValue());
+    //   if (capture_window_height <= 4) capture_window_height = 4;
+    //   update_capture_window = true;
+    // }
 
 
 
@@ -1675,39 +1735,40 @@ public class ControlFrame extends PApplet {
     // A D J U S T M E N T   S L I D E R S
     ///////////////////////////////////////////////////////////////////////
     if (theEvent.isFrom(cp5.getController("red"))) {
-      ui_red = (theEvent.getController().getValue());
+      ui_red_target = (theEvent.getController().getValue());
       update_sliders=true;
     }
     if (theEvent.isFrom(cp5.getController("green"))) {
-      ui_green = (theEvent.getController().getValue());
+      ui_green_target = (theEvent.getController().getValue());
     }
     if (theEvent.isFrom(cp5.getController("blue"))) {
-      ui_blue = (theEvent.getController().getValue());
+      ui_blue_target = (theEvent.getController().getValue());
     } 
     if (theEvent.isFrom(cp5.getController("brightness"))) {
       float b = theEvent.getController().getValue();
-      ui_brightness = b / 100.0f;
+      ui_brightness_target = b / 100.0f;
     }
     if (theEvent.isFrom(cp5.getController("contrast"))) {
       float c = theEvent.getController().getValue();
-      if (fx_toggle[1]==0) ui_contrast = pow((100 + c) / 100, 2.0f);
-      else if (fx_toggle[1]==1) ui_contrast = c / 100.0f;
+      ui_contrast_target = c / 100.0f;
+      // if (fx_toggle[1]==0) ui_contrast = pow((100 + c) / 100, 2.0);
+      // else if (fx_toggle[1]==1) ui_contrast = c / 100.0;
     }
     if (theEvent.isFrom(cp5.getController("hue"))) {
       float b = theEvent.getController().getValue();
-      ui_hue = b / 100.0f;
+      ui_hue_target = b / 100.0f;
     }
     if (theEvent.isFrom(cp5.getController("saturation"))) {
       float b = theEvent.getController().getValue();
-      ui_saturation = b / 100.0f;
+      ui_saturation_target = b / 100.0f;
     }
     if (theEvent.isFrom(cp5.getController("sharpen"))) {
       float b = theEvent.getController().getValue();
-      ui_sharpen = b / 100.0f;
+      ui_sharpen_target = b / 100.0f;
     }
     if (theEvent.isFrom(cp5.getController("niceContrast"))) {
       float b = theEvent.getController().getValue();
-      ui_niceContrast = b / 100.0f;
+      ui_niceContrast_target = b / 100.0f;
     }
 
     if (theEvent.isFrom(cp5.getController("sort: black"))) {
@@ -1730,35 +1791,35 @@ public class ControlFrame extends PApplet {
     ///////////////////////////////////////////////////////////////////////
     if (theEvent.isFrom(cp5.getController("red_reset"))) {
       cp5.getController("red").setValue(0.0f);
-      ui_red = 0.0f;
+      ui_red_target = 0.0f;
     }
     if (theEvent.isFrom(cp5.getController("green_reset"))) {
       cp5.getController("green").setValue(0.0f);
-      ui_green = 0.0f;
+      ui_green_target = 0.0f;
     }
     if (theEvent.isFrom(cp5.getController("blue_reset"))) {
       cp5.getController("blue").setValue(0.0f);
-      ui_blue = 0.0f;
+      ui_blue_target = 0.0f;
     }
     if (theEvent.isFrom(cp5.getController("brightness_reset"))) {
       cp5.getController("brightness").setValue(0.0f);
-      ui_brightness = 0.0f;
+      ui_brightness_target = 0.0f;
     }
     if (theEvent.isFrom(cp5.getController("contrast_reset"))) {
       cp5.getController("contrast").setValue(0.0f);
-      ui_contrast = 0.0f;
+      ui_contrast_target = 0.0f;
     }
     if (theEvent.isFrom(cp5.getController("hue_reset"))) {
       cp5.getController("hue").setValue(0.0f);
-      ui_hue = 0.0f;
+      ui_hue_target = 0.0f;
     }
     if (theEvent.isFrom(cp5.getController("saturation_reset"))) {
       cp5.getController("saturation").setValue(0.0f);
-      ui_saturation = 0.0f;
+      ui_saturation_target = 0.0f;
     }
     if (theEvent.isFrom(cp5.getController("sharpen_reset"))) {
       cp5.getController("sharpen").setValue(0.0f);
-      ui_sharpen = 0.0f;
+      ui_sharpen_target = 0.0f;
     }
     if (theEvent.isFrom(cp5.getController("niceContrast_reset"))) {
       cp5.getController("niceContrast").setValue(0.0f);
@@ -1785,58 +1846,58 @@ public class ControlFrame extends PApplet {
     ///////////////////////////////////////////////////////////////////////
     // F X   T O G G L E S
     ///////////////////////////////////////////////////////////////////////
-    if (theEvent.isFrom(checkbox_fx)) {
-      int size = checkbox_fx.getArrayValue().length;
-      fx_toggle = new int[size];
+    // if (theEvent.isFrom(checkbox_fx)) {
+    //   int size = checkbox_fx.getArrayValue().length;
+    //   fx_toggle = new int[size];
 
-      for (int i = 0; i < size; i++) {
-        int n = (int)checkbox_fx.getArrayValue()[i];
-        fx_toggle[n] = (int)checkbox_fx.getArrayValue()[n];
-      }
+    //   for (int i = 0; i < size; i++) {
+    //     int n = (int)checkbox_fx.getArrayValue()[i];
+    //     fx_toggle[n] = (int)checkbox_fx.getArrayValue()[n];
+    //   }
 
-      float value;
-      // update brightness
-      value = cp5.getController("brightness").getValue();
-      ui_brightness = value / 100.0f;
+    //   float value;
+    //   // update brightness
+    //   value = cp5.getController("brightness").getValue();
+    //   ui_brightness = value / 100.0;
 
-      // update contrast
-      value = cp5.getController("contrast").getValue();
-      if (fx_toggle[1]==0) ui_contrast = pow((100 + value) / 100, 2.0f);
-      else if (fx_toggle[1]==1) ui_contrast = value / 100.0f;
+    //   // update contrast
+    //   value = cp5.getController("contrast").getValue();
+    //   if (fx_toggle[1]==0) ui_contrast = pow((100 + value) / 100, 2.0);
+    //   else if (fx_toggle[1]==1) ui_contrast = value / 100.0;
       
-      // update the rest...
-      value = cp5.getController("hue").getValue(); 
-      ui_hue = value / 100.0f;
+    //   // update the rest...
+    //   value = cp5.getController("hue").getValue(); 
+    //   ui_hue = value / 100.0;
 
-      value = cp5.getController("saturation").getValue(); 
-      ui_saturation = value / 100.0f;
+    //   value = cp5.getController("saturation").getValue(); 
+    //   ui_saturation = value / 100.0;
     
-      value = cp5.getController("sharpen").getValue(); 
-      ui_sharpen = value / 100.0f;
+    //   value = cp5.getController("sharpen").getValue(); 
+    //   ui_sharpen = value / 100.0;
     
-      value = cp5.getController("niceContrast").getValue(); 
-      ui_niceContrast = value / 100.0f;
-    }
+    //   value = cp5.getController("niceContrast").getValue(); 
+    //   ui_niceContrast = value / 100.0;
+    // }
 
     ///////////////////////////////////////////////////////////////////////
     // M O R E   T O G G L E S
     ///////////////////////////////////////////////////////////////////////
-    if (theEvent.isFrom(checkbox_cc)) {
-        cc_toggle = (int)checkbox_cc.getArrayValue()[0];
-      }
+    // if (theEvent.isFrom(checkbox_cc)) {
+    //     cc_toggle = (int)checkbox_cc.getArrayValue()[0];
+    //   }
     
     if (theEvent.isFrom(checkbox_party)) {
         party_toggle = (int)checkbox_party.getArrayValue()[0];
       }
 
-    if (theEvent.isFrom(checkbox_fx)) {
-      int size = checkbox_fx.getArrayValue().length;
-      fx_toggle = new int[size];
-      for (int i=0; i<size; i++){
-        int n = (int)checkbox_fx.getArrayValue()[i];
-        fx_toggle[i] = n;
-      }
-    }
+    // if (theEvent.isFrom(checkbox_fx)) {
+    //   int size = checkbox_fx.getArrayValue().length;
+    //   fx_toggle = new int[size];
+    //   for (int i=0; i<size; i++){
+    //     int n = (int)checkbox_fx.getArrayValue()[i];
+    //     fx_toggle[i] = n;
+    //   }
+    // }
     
     if (theEvent.isFrom(checkbox_sort)) {
       int incoming_0 = (int)checkbox_sort.getArrayValue()[0];
@@ -2003,47 +2064,70 @@ public void drawMiniSample() {
   
 }
 // \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
+
+///////////////////////////////////////////////////////////////////////
+// EASE IN
+///////////////////////////////////////////////////////////////////////
+public float EaseIn(float _value, float _target, float _speed){
+  float x = _value;
+  float d = _target - _value;
+  x = d * _speed;
+  return x;
+}
+
+
 ///////////////////////////////////////////////////////////////////////
 // U P D A T E   S H A D E R   V A R S
 ///////////////////////////////////////////////////////////////////////
+float ease_speed = 0.01f;
 public void updateShaderVariables(){
-    mainShader.set("ui_red", ui_red);
-    mainShader.set("ui_green", ui_green);
-    mainShader.set("ui_blue", ui_blue);
-    mainShader.set("ui_brightness", ui_brightness);
-    mainShader.set("ui_contrast", ui_contrast);
-    mainShader.set("ui_hue", ui_hue);
-    mainShader.set("ui_saturation", ui_saturation);
-    mainShader.set("ui_sharpen", ui_sharpen);
-    mainShader.set("ui_niceContrast", ui_niceContrast);
-    // mainShader.set("ui_sortBlackVal", ui_sortBlackVal);
-    // mainShader.set("ui_sortBrightVal", ui_sortBrightVal);
-    // mainShader.set("ui_sortWhiteVal", ui_sortWhiteVal);
-    mainShader.set("ui_party", ui_party);
-    mainShader.set("cc_mode",   cc_toggle);
-    mainShader.set("brightness_mode",   fx_toggle[0]);
-    mainShader.set("contrast_mode",     fx_toggle[1]);
-    mainShader.set("hue_mode",          fx_toggle[2]);
-    mainShader.set("saturation_mode",   fx_toggle[3]);
-    mainShader.set("sharpening_mode",   fx_toggle[4]);
-    mainShader.set("niceContrast_mode", fx_toggle[5]);
-    mainShader.set("party_mode",   party_toggle);
-    mainShader.set("ttime", PApplet.parseFloat(millis())*.0001f);
 
-    update_sliders=false;
+
+  // easing animation for variables
+  ui_red += EaseIn(ui_red, ui_red_target, ease_speed);
+  ui_green += EaseIn(ui_green, ui_green_target, ease_speed);
+  ui_blue += EaseIn(ui_blue, ui_blue_target, ease_speed);
+  ui_brightness += EaseIn(ui_brightness, ui_brightness_target, ease_speed);
+  ui_contrast += EaseIn(ui_contrast, ui_contrast_target, ease_speed);
+  ui_hue += EaseIn(ui_hue, ui_hue_target, ease_speed);
+  ui_saturation += EaseIn(ui_saturation, ui_saturation_target, ease_speed);
+  ui_sharpen += EaseIn(ui_sharpen, ui_sharpen_target, ease_speed);
+  ui_niceContrast += EaseIn(ui_niceContrast, ui_niceContrast_target, ease_speed);
+
+  // set shader vaiables 
+  mainShader.set("ui_red", ui_red);
+  mainShader.set("ui_green", ui_green);
+  mainShader.set("ui_blue", ui_blue);
+  mainShader.set("ui_brightness", ui_brightness);
+  mainShader.set("ui_contrast", ui_contrast);
+  mainShader.set("ui_hue", ui_hue);
+  mainShader.set("ui_saturation", ui_saturation);
+  mainShader.set("ui_sharpen", ui_sharpen);
+  mainShader.set("ui_niceContrast", ui_niceContrast);
+  // mainShader.set("ui_sortBlackVal", ui_sortBlackVal);
+  // mainShader.set("ui_sortBrightVal", ui_sortBrightVal);
+  // mainShader.set("ui_sortWhiteVal", ui_sortWhiteVal);
+  mainShader.set("ui_party", ui_party);
+  mainShader.set("ttime", PApplet.parseFloat(millis())*.0001f);
+
+  update_sliders=false;
 }
-// \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
+
 ///////////////////////////////////////////////////////////////////////
 // I N J E C T   S H A D E R
 ///////////////////////////////////////////////////////////////////////
-// Apply the shader to the PImage
-///////////////////////////////////////////////////////////////////////
 
 public void injectShader(){
-  // update shader with slider settings
+  // update shader with slider settings and turn it on
   updateShaderVariables();
-  // apply the shader
-  shader(mainShader);
+
+  gl.beginDraw();
+    gl.shader(mainShader);
+    gl.image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  gl.endDraw();
+
+  // send color corrected image to glitch functions
+  toDisplay = gl.get();
 }
 
 // \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
@@ -2166,16 +2250,42 @@ Thist tab deals with all of the Screen Capture functions.
 
 
 
+
+
+Capture cam; // webcam object
 PImage capturada; // This is where we'll sotre all captured data.
 
 // \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 START CAPTURE
 // Starting screen capture ---------------------------------------------------------
 public void iniciarScreenCapture() {
+
+  // get a a list of connected cameras
+  String[] cameras = Capture.list();
+  
+  if (cameras.length == 0) {
+    println("There are no cameras available for capture.");
+    exit();
+  } else {
+    println("Available cameras:");
+    for (int i = 0; i < cameras.length; i++) {
+      println(i + ": " + cameras[i]);
+    }
+    
+    // use the first camera from the list
+    // cam = new Capture(this, cameras[0]);
+    cam = new Capture(this, cameras[12]);
+    cam.start();     
+  }
+
+
   // 1. We start the blank image (recipient)
   capturada = createImage( anchoCaptura, altoCaptura, RGB );
+  capturada = cam;
   // 2. We start the thread
   thread( "threadScreenCapture" );
 }
+
+
 // \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 CAPTURE THREAD
 boolean pausar_captura = false; // This will always be turned off
 public void threadScreenCapture() {
@@ -2183,23 +2293,31 @@ public void threadScreenCapture() {
   println(">> ScreenCapture thread: ON");
 
   // W1 create this object that retrieves constatly information
-  Robot robot; // (should be in the java class
+  // Robot robot; // (should be in the java class
 
   // This loop will request a screen capture image
   while (!pausar_captura) {
 
     // We insert some modulo magic, so it won't crash
     if (millis()%40==0) {
-      try {
-        robot = new Robot(); // We start the robot
+      // try {
+        
+        // load image into capture object
+        // if (cam.available() == true) {
+          cam.read();
+        // }
+        capturada = cam; // forward webcam to rest of code
+        // capturada = new PImage(0, 0, anchoCaptura, altoCaptura);
+
+        // robot = new Robot(); // We start the robot
         // We get the image (at last)!!!!
-        capturada = new PImage(robot.createScreenCapture(new Rectangle(0, trasladoY, anchoCaptura, altoCaptura)));
+        // capturada = new PImage(robot.createScreenCapture(new Rectangle(0, trasladoY, anchoCaptura, altoCaptura)));
        // println(capturada.get(floor(random(capturada.width)),floor(random(capturada.height)))); // Random pixel data
-      }
-      catch (AWTException e) {
-      capturada = new PImage(null);
-        println(">> HOLY, FATAL ERROR: --->"+e);
-      }
+      // }
+      // catch (AWTException e) {
+      // capturada = new PImage(null);
+        // println(">> HOLY, FATAL ERROR: --->"+e);
+      // }
     } // <--- if ends
   } // <---- while ends
 } // <--- thread ends

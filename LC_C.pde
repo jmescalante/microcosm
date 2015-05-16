@@ -41,7 +41,8 @@ void fallingWaterShow() {
   // injectShader();
 
   // 2. We show the image
-  image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  // image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  image(toDisplay, 0, 0, anchoDisplay, altoDisplay);
   
   //  //We start Cycling
   for (int i = 0; i < densidadWaterFall/1; i++) {
@@ -60,7 +61,8 @@ void fallingWaterShow() {
     // e. We will get a color data from an image
     int deseoX = floor(map(i, 0, densidadWaterFall, 0, capturada.width));
     int deseoY = floor(map(yWater[i], 0, height, 0, capturada.height));
-    color c = capturada.get(deseoX, deseoY);
+    // color c = capturada.get(deseoX, deseoY);
+    color c = toDisplay.get(deseoX, deseoY);
 
     // f. We draw something upside down
     noStroke();
@@ -155,7 +157,8 @@ void polvoxShow() {
   // injectShader();
 
   // 2. We show the image
-  if(ocultar) image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  // if(ocultar) image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  if(ocultar) image(toDisplay, 0, 0, anchoDisplay, altoDisplay);
   
   // 1. Mostramos y calculamos los surcos
   for (int i = 0; i < cantidadSurcos; i++) {
@@ -245,7 +248,8 @@ class Dust {
     //this.angulo = 45;
     this.angulo = angulo;
     this.aumentoX = 0;
-    this.c = capturada.get( int(x), int(y) );
+    // this.c = capturada.get( int(x), int(y) );
+    this.c = toDisplay.get( int(x), int(y) );
    // this.c = color(random(255), random(255), 0);
     this.alpha = 255;
     this.alpha= alphaInicio;
@@ -295,7 +299,8 @@ class Dust {
     // 3. Shape alternative test
     int deseoX = floor(map(x, 0, anchoDisplay, 0, anchoCaptura));
     int deseoY = floor(map(y, 0, altoDisplay, 0, altoCaptura));
-    c = capturada.get( deseoX, deseoY) ;
+    // c = capturada.get( deseoX, deseoY) ;
+    c = toDisplay.get( deseoX, deseoY) ;
     fill(red(c), green(c), blue(c), alpha);
 
     noStroke();

@@ -74,7 +74,8 @@ void hairsShow() {
   if (hairs1AVez) hairs1AVez = hairsStart();
 
   // 2. We show the captured pic
-  image(capturada, 0, 0, width, height);
+  // image(capturada, 0, 0, width, height);
+  image(toDisplay, 0, 0, width, height);
 
   // 2. We assign a position if the hair is available to assign, if no, well... no :(
   for (int i = 0; i < cabellosMax; i++) {
@@ -122,7 +123,8 @@ void hairsShow() {
 
       //  propiedades de dibujo
       strokeWeight(random(1));
-      color c = capturada.get( floor(hairsX[i]), floor(hairsY[i]) );
+      // color c = capturada.get( floor(hairsX[i]), floor(hairsY[i]) );
+      color c = toDisplay.get( floor(hairsX[i]), floor(hairsY[i]) );
       fill(red(c), green(c), blue(c), hairsAlpha[i]);
       stroke(red(c), green(c), blue(c), hairsAlpha[i]);
       //stroke(255, 0, 0, hairsAlpha[i]);
@@ -196,11 +198,13 @@ int [] asignarNuevaPosicion() {
     float yAzar = floor(random(capturada.height));
 
     // b. we load the pixels
-    PImage capturadaT = capturada;
-    capturadaT.loadPixels();
+    // PImage capturadaT = capturada;
+    // PImage capturadaT = toDisplay;
+    // capturadaT.loadPixels();
 
     // c. We get one pixel
-    float pixel = brightness(capturadaT.pixels[ int(yAzar*capturadaT.width+xAzar) ]);
+    // float pixel = brightness(capturadaT.pixels[ int(yAzar*capturadaT.width+xAzar) ]);
+    float pixel = brightness(capturada.pixels[ int(yAzar*toDisplay.width+xAzar) ]);
 
     // d We ask if it is black enough
     if (pixel < limiteNegro) {
@@ -213,7 +217,7 @@ int [] asignarNuevaPosicion() {
     }
 
     // Z
-    capturadaT.updatePixels();
+    // capturadaT.updatePixels();
   }
   // 4. Values are returnes
   return posiciones;
@@ -260,7 +264,8 @@ void stripeShow() {
   injectShader();
 
   // 2. We show the captured pic
-  image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  // image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  image(toDisplay, 0, 0, anchoDisplay, altoDisplay);
 
   // 3. We show the stripes
   for (int i = 0; i < cantidadStripes; i++) {
@@ -377,7 +382,8 @@ class Stripe {
         // 2. We get the color for the first bar
         float deseoX = map( x, 0, anchoDisplay, 0, anchoCaptura );
         float deseoY = map( y+(tamano[i]*sentido), 0, altoDisplay, 0, altoCaptura);
-        c = capturada.get(floor(deseoX), floor(deseoY));
+        // c = capturada.get(floor(deseoX), floor(deseoY));
+        c = toDisplay.get(floor(deseoX), floor(deseoY));
 
         // 3. We set the display properties
         noStroke();
@@ -389,7 +395,8 @@ class Stripe {
 
         // 5. WE put the 2nd Shape
         deseoY = map( y-(tamano[i]*sentido), 0, altoDisplay, 0, altoCaptura);
-        c = capturada.get(floor(deseoX), floor(deseoY));
+        // c = capturada.get(floor(deseoX), floor(deseoY));
+        c = toDisplay.get(floor(deseoX), floor(deseoY));
         fill(c);
 
         // 6. We put the second shape

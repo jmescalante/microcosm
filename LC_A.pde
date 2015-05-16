@@ -23,9 +23,11 @@ void pixelationShow() {
   if (pixelation1AVez) pixelation1AVez = pixelationStart();
 
   // 2. We will apply some threshold to the image
-  PImage pic = capturada;
+  // PImage pic = capturada;
+  // PImage pic = toDisplay;
   //pic.filter(THRESHOLD, map(mouseX, 0, width, 0, 1));
-  pic.filter(THRESHOLD, random(0.6, 0.8));
+  // pic.filter(THRESHOLD, random(0.6, 0.8));
+  toDisplay.filter(THRESHOLD, random(0.6, 0.8));
   //capturada.filter(GRAY);
 
 
@@ -36,8 +38,10 @@ void pixelationShow() {
       int x = floor(map( i, 0, pixelationResX, 0, anchoCaptura ));
       int y = floor(map( j, 0, pixelationResY, 0, altoCaptura));
       // b. we ask if it is white
-      if ( pic.get( x, y ) > -1.1 ) {
-        fill(capturada.get( x, y));
+      // if ( pic.get( x, y ) > -1.1 ) {
+      if ( toDisplay.get( x, y ) > -1.1 ) {
+        // fill(capturada.get( x, y)); // alternative method-->gives colored X'es
+        fill(toDisplay.get( x, y));
         // c. We re-map the values
         x = floor(map( x, 0, anchoCaptura, 0, width));
         y = floor(map( y, 0, altoCaptura, 0, height ));
@@ -155,7 +159,8 @@ void pixelNationShow() {
   if (pixelNation1AVez) pixelNation1AVez = pixelNationStart();
 
   // 0. We place the image
-  image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  // image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  image(toDisplay, 0, 0, anchoDisplay, altoDisplay);
 
   // Mostrar operaciones de curtain
   curtainOperations();
@@ -176,7 +181,8 @@ void pixelNationShow() {
       float alto = height/pixelNationResY;
 
       // c. we get the color
-      color c = capturada.get( x, y);
+      // color c = capturada.get( x, y);
+      color c = toDisplay.get( x, y);
       fill(c);
 
       // c. We re-map the values
@@ -242,5 +248,6 @@ void mehShow() {
   if (meh1AVez) meh1AVez = mehStart();
 
   //2. We show the image
-  image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  // image(capturada, 0, 0, anchoDisplay, altoDisplay);
+  image(toDisplay, 0, 0, anchoDisplay, altoDisplay);
 }

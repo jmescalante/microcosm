@@ -25,15 +25,6 @@ uniform float ui_sortBrightVal;
 uniform float ui_sortWhiteVal;
 uniform float ui_party;
 
-uniform int cc_mode;
-uniform int brightness_mode;
-uniform int contrast_mode;
-uniform int hue_mode;
-uniform int saturation_mode;
-uniform int sharpening_mode;
-uniform int niceContrast_mode;
-uniform int party_mode;
-
 uniform float ttime;
 
 const vec4 lumcoeff = vec4(0.299, 0.587, 0.114, 0);
@@ -203,12 +194,6 @@ vec3 bch2RGB_altAxis(vec3 _bch){
 }
 
 vec3 colorCorrect(vec3 _col, float _red, float _green, float _blue){
-  vec3 cc = vec3(_red,_green,_blue);
-  if (cc_mode == 0){
-    cc += _col;
-    return cc;
-  } 
-  else {
     vec3 BCH = rgb2BCH(_col);
     vec3 cc;
     float bch_val = BCH.x;
@@ -229,80 +214,47 @@ vec3 colorCorrect(vec3 _col, float _red, float _green, float _blue){
     cc = bch2RGB(cc);
 
     return cc;
-  }
 }
 
 // B R I G H T N E S S
 vec3 Brightness(vec3 _col, float _f){
-  if (brightness_mode==0){
-    _col.rgb = (_col.rgb + (_col.rgb * _f));
-    return _col;
-
-  } else {
-    vec3 BCH = rgb2BCH(_col);
-    vec3 b3 = vec3(BCH.x,BCH.x,BCH.x);
-    float x = pow((_f + 1.)/2.,2.);
-    x = _f;
-    _col = _col + (b3 * x)/3.;
-    return _col;
-  }
+  vec3 BCH = rgb2BCH(_col);
+  vec3 b3 = vec3(BCH.x,BCH.x,BCH.x);
+  float x = pow((_f + 1.)/2.,2.);
+  x = _f;
+  _col = _col + (b3 * x)/3.;
+  return _col;
 }
 
 // C O N T R A S T  
 vec3 Contrast(vec3 _col, float _f){
-  if (contrast_mode==0){
-    _col = (( _f * (_col - 0.5 )) + 0.5) ;
-    return _col;
+  vec3 def = rgb2DEF(_col);
+  float B = getB(def);
+  float C = getC(def);
+  float H = getH(def);
+  
+  B = B * pow(B*(1.-C), _f);
 
-  } else {
-    vec3 def = rgb2DEF(_col);
-    float B = getB(def);
-    float C = getC(def);
-    float H = getH(def);
-    
-    B = B * pow(B*(1.-C), _f);
+  def.x = B * cos(C);
+  def.y = B * sin(C) * cos(H);
+  def.z = B * sin(C) * sin(H);
 
-    def.x = B * cos(C);
-    def.y = B * sin(C) * cos(H);
-    def.z = B * sin(C) * sin(H);
-
-    _col.rgb = def2RGB(def);
-    return _col;
-  }
+  _col.rgb = def2RGB(def);
+  return _col;
 }
 
 vec3 Hue(vec3 _col, float _f){
-  if (hue_mode==0){
-    vec3 hsv = rgb2HSV(_col);  // to HSV
-    float hue_mod = _f * 360.0;
-    hue_mod = mod(hue_mod, 360.0); // go back to 0 if over 360 deg
-    hsv.x += hue_mod;
-    if (hsv.x >= 360.0) hsv.x -= 360.0;
-    hsv = hsv2RGB(hsv);  // to RGB
-
-    return hsv;
-  }
-  else {
-    vec3 BCH = rgb2BCH(_col);
-    BCH.z += _f * 3.1459 * 2.;
-    BCH = bch2RGB(BCH);
-    return BCH;
-  }
+  vec3 BCH = rgb2BCH(_col);
+  BCH.z += _f * 3.1459 * 2.;
+  BCH = bch2RGB(BCH);
+  return BCH;
 }
 
 vec3 Saturation(vec3 _col, float _f){
-  if (saturation_mode==0){
-    vec3 hsv = rgb2HSV(_col);  // to HSV
-    hsv.y *= (_f + 1.);
-    hsv = hsv2RGB(hsv);  // to RGB
-    return hsv;
-  }
-  else {
-    vec3 BCH = rgb2BCH(_col);
-    BCH.y *= (_f + 1.);
-    BCH = bch2RGB(BCH);
-    return BCH;
-  }
+  vec3 BCH = rgb2BCH(_col);
+  BCH.y *= (_f + 1.);
+  BCH = bch2RGB(BCH);
+  return BCH;
 }
 
 // S H A R P E N   
@@ -440,13 +392,13 @@ vec2 pattern(vec2 p, float _mult, vec3 _col, out float f) {
 
 void main() {
 
-  float fbm = 0.0;
   vec4 col = texture2D(texture, vertTexCoord.st);
+  
+  float fbm = 0.0;
   if (ui_party>=0.0001){
     col = texture2D(texture, pattern(vertTexCoord.st, ui_party*100., col.rgb, fbm));
     col.rgb = Hue(col.rgb, ttime*ui_party*1000.+(ui_party*3.1415));
     if (ui_party*100. >= .9) col.rgb = Saturation(col.rgb, ttime + ui_party * 400.);
-    // col = texture2D(texture, vec2(vertTexCoord.s+.1, sin(vertTexCoord.t)));
   } 
   
   ///////////////////////////////////////////////////////////////////////
@@ -485,19 +437,19 @@ void main() {
   ///////////////////////////////////////////////////////////////////////
   // H U E  D E M O 
   ///////////////////////////////////////////////////////////////////////
-  vec3 BCH = rgb2BCH(col.rgb);
-    BCH.z += ttime*10.;
-    vec3 bch_rgb = bch2RGB(BCH);
-    vec3 bch_rgb_altAxis = bch2RGB_altAxis(BCH);
-  vec3 bch_rgb_h = vec3(bch_rgb.z,bch_rgb.z,bch_rgb.z);
+  // vec3 BCH = rgb2BCH(col.rgb);
+  //   BCH.z += ttime*10.;
+  //   vec3 bch_rgb = bch2RGB(BCH);
+  //   vec3 bch_rgb_altAxis = bch2RGB_altAxis(BCH);
+  // vec3 bch_rgb_h = vec3(bch_rgb.z,bch_rgb.z,bch_rgb.z);
   
-  vec3 HSV = rgb2HSV(col.rgb);
-    float hue_mod = ttime * 4. * 180.0 / 2.;
-    hue_mod = mod(hue_mod, 360.0);
-    HSV.x += hue_mod;
-    if (HSV.x >= 360.0) HSV.x -= 360.0;
-  vec3 hsv_rgb = hsv2RGB(HSV);  // to RGB
-  vec3 hsv_rgb_h = vec3(hsv_rgb.z,hsv_rgb.z,hsv_rgb.z);
+  // vec3 HSV = rgb2HSV(col.rgb);
+  //   float hue_mod = ttime * 4. * 180.0 / 2.;
+  //   hue_mod = mod(hue_mod, 360.0);
+  //   HSV.x += hue_mod;
+  //   if (HSV.x >= 360.0) HSV.x -= 360.0;
+  // vec3 hsv_rgb = hsv2RGB(HSV);  // to RGB
+  // vec3 hsv_rgb_h = vec3(hsv_rgb.z,hsv_rgb.z,hsv_rgb.z);
 
   // ***JUST MESS WITH THESE*** //
   // col.rgb = hsv_rgb;
