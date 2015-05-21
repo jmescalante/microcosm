@@ -34,8 +34,8 @@ void iniciarScreenCapture() {
       println(i + ": " + cameras[i]);
     }
     
-    // cam = new Capture(this, cameras[0]); //CamTwist, the dSLR
-    cam = new Capture(this, cameras[12]); //Webcam on my Mac Air
+    cam = new Capture(this, cameras[0]); //CamTwist, the dSLR
+    // cam = new Capture(this, cameras[12]); //Webcam on my Mac Air
     cam.start();     
   }
 

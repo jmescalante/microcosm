@@ -16,9 +16,11 @@ Journey history
  and Kurt Kaminski (for pointing me out in the right screen capture, thread and shader direction).
  This project, developed under 201-A will be the foundation of an upcoming live performance
  */
+
 // Switches
 int trasladoY = 250; // This i: the Y position where the capture starts
 Boolean kamindustries = false; // If we want to display the frameRate
+
 // Working variables
 int anchoCaptura, altoCaptura, anchoDisplay, altoDisplay;
 
