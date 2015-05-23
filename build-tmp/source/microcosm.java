@@ -40,15 +40,26 @@ Journey history
  and Kurt Kaminski (for pointing me out in the right screen capture, thread and shader direction).
  This project, developed under 201-A will be the foundation of an upcoming live performance
  */
+
 // Switches
 int trasladoY = 250; // This i: the Y position where the capture starts
 Boolean kamindustries = false; // If we want to display the frameRate
+
 // Working variables
 int anchoCaptura, altoCaptura, anchoDisplay, altoDisplay;
 
 PShader mainShader;
 PGraphics gl;
 PImage toDisplay;
+PImage toResize;
+PImage dualDisplay;
+
+int capture_height = 1056;
+int capture_width = 704;
+
+public boolean sketchFullScreen() {
+  return true;
+}
 
 // -------------------------------------------------------------------------------------------
 public void setup() {
@@ -56,7 +67,8 @@ public void setup() {
   // iniciarStage(640, 360, 1280, 720); // All captures and sizes operations are set up
   //  iniciarStage(640, 360, 640, 360); // All captures and sizes operations are set up
   // iniciarStage(1280, 720, 1280, 720); 
-  iniciarStage(1056, 704, 1056, 704); 
+  // iniciarStage(1056, 704, 1056, 704); //previous working one 5/22
+  iniciarStage(2800, 1060, 2800, 1060); 
   size(anchoDisplay, altoDisplay, P2D);
   
   /*NOTES:
@@ -70,9 +82,10 @@ public void setup() {
   loadShapes();
 
   gl = createGraphics(anchoDisplay, altoDisplay, P3D);
+  toResize = createImage(capture_width, capture_height, RGB);
   toDisplay = createImage(anchoDisplay, altoDisplay, RGB);
 
-  frame.setResizable(true);
+  // frame.setResizable(true);
   // cc_toggle = 0; // rgb cc mode
   cf = addControlFrame("src window ctrl", 200,350);
   mainShader = loadShader("shader.frag");
@@ -81,14 +94,14 @@ public void setup() {
 // -------------------------------------------------------------------------------------------
 public void draw() {
 
-  
   if (!memoria)  background(0);
 
-  // Apply shader magic and output the main toDisplay PImage!!!
+  // Apply shader magic and output the color corrected toDisplay PImage!!!
   injectShader();
 
+
   // Live Cinema stages -->
-  // Need this condition to wait until capture is working
+  // Need the first condition to wait until capture image has data to play with
   if (capturada.width > 0 && capturada.height > 0){ 
     if (pixelation) pixelationShow();
     if (pixelNation) pixelNationShow();
@@ -106,8 +119,6 @@ public void draw() {
     // Mini Sample
     if (miniCaptura) drawMiniSample();
   }
-
-  // resetShader();
 
 }
 // -------------------------------------------------------------------------------------------------------- //
@@ -344,7 +355,7 @@ public void pixelNationShow() {
 
 // \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 MEH
 //SWITCHES
-Boolean meh = false;
+Boolean meh = true;
 
 // *
 Boolean meh1AVez = true;
@@ -569,7 +580,8 @@ public int [] asignarNuevaPosicion() {
 
     // c. We get one pixel
     // float pixel = brightness(capturadaT.pixels[ int(yAzar*capturadaT.width+xAzar) ]);
-    float pixel = brightness(capturada.pixels[ PApplet.parseInt(yAzar*toDisplay.width+xAzar) ]);
+    // float pixel = brightness(capturada.pixels[ int(yAzar*toDisplay.width+xAzar) ]);
+    float pixel = brightness(toDisplay.pixels[ PApplet.parseInt(yAzar*toDisplay.width+xAzar) ]);
 
     // d We ask if it is black enough
     if (pixel < limiteNegro) {
@@ -921,7 +933,8 @@ public void fallingWaterShow() {
 Boolean polvox = false;
 Boolean ocultar = true;
 Dust [] polvos; // All of the Dust particles
-int cantidadSurcos = 155; // 55 seems to work, 255 fully populated
+// int cantidadSurcos = 155; // 55 seems to work, 255 fully populated
+int cantidadSurcos = 55; // 55 seems to work, 255 fully populated
 float grosorMax = 3.81f;
 float [] xLinea, yLinea, velLinea, alphaLinea, velAlphaOla, velOlaLinea, sentidoLinea, anguloLinea;
 Boolean [] surcoPrendido;
@@ -1236,7 +1249,7 @@ Boolean saturationMode = true;
 Boolean brightnessMode = true;
 Boolean hueMode = true;
 //
-Boolean spore = true;
+Boolean spore = false;
 // *
 Boolean spore1AVez = true;
 // ----------------------------------------------------------------------------------------------------------------
@@ -1980,14 +1993,18 @@ public void updateShaderVariables(){
 public void injectShader(){
   // update shader with slider settings and turn it on
   updateShaderVariables();
-
   gl.beginDraw();
     gl.shader(mainShader);
-    gl.image(capturada, 0, 0, anchoDisplay, altoDisplay);
+    gl.image(capturada, anchoDisplay/4, 0, anchoDisplay/2, altoDisplay);
   gl.endDraw();
+
+  // toResize = gl.get();
+  // toResize.resize(0, 1060);
 
   // send color corrected image to glitch functions
   toDisplay = gl.get();
+
+  // toResize.resize(capture_width, capture_height);
 }
 
 // \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
@@ -2130,14 +2147,14 @@ public void iniciarScreenCapture() {
       println(i + ": " + cameras[i]);
     }
     
-    // cam = new Capture(this, cameras[0]); //CamTwist, the dSLR
-    cam = new Capture(this, cameras[12]); //Webcam on my Mac Air
+    cam = new Capture(this, cameras[0]); //CamTwist, the dSLR
+    // cam = new Capture(this, cameras[12]); //Webcam on my Mac Air
     cam.start();     
   }
 
 
   // 1. We start the blank image (recipient)
-  capturada = createImage( anchoCaptura, altoCaptura, RGB );
+  capturada = createImage( capture_width, capture_height, RGB );
   capturada = cam;
 
   // 2. We start the thread
@@ -2182,7 +2199,7 @@ public void threadScreenCapture() {
   } // <---- while ends
 } // <--- thread ends
   static public void main(String[] passedArgs) {
-    String[] appletArgs = new String[] { "--full-screen", "--bgcolor=#666666", "--hide-stop", "microcosm" };
+    String[] appletArgs = new String[] { "microcosm" };
     if (passedArgs != null) {
       PApplet.main(concat(appletArgs, passedArgs));
     } else {

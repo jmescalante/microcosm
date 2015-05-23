@@ -97,7 +97,8 @@ void fallingWaterShow() {
 Boolean polvox = false;
 Boolean ocultar = true;
 Dust [] polvos; // All of the Dust particles
-int cantidadSurcos = 155; // 55 seems to work, 255 fully populated
+// int cantidadSurcos = 155; // 55 seems to work, 255 fully populated
+int cantidadSurcos = 55; // 55 seems to work, 255 fully populated
 float grosorMax = 3.81;
 float [] xLinea, yLinea, velLinea, alphaLinea, velAlphaOla, velOlaLinea, sentidoLinea, anguloLinea;
 Boolean [] surcoPrendido;

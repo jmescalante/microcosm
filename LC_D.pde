@@ -88,7 +88,7 @@ Boolean saturationMode = true;
 Boolean brightnessMode = true;
 Boolean hueMode = true;
 //
-Boolean spore = true;
+Boolean spore = false;
 // *
 Boolean spore1AVez = true;
 // ----------------------------------------------------------------------------------------------------------------

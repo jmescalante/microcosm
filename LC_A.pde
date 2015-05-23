@@ -232,7 +232,7 @@ void pixelNationShow() {
 
 // █████████████████████████████████████████████████████████████████████████████████████████████████████████████████ MEH
 //SWITCHES
-Boolean meh = false;
+Boolean meh = true;
 
 // *
 Boolean meh1AVez = true;

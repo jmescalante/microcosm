@@ -204,7 +204,8 @@ int [] asignarNuevaPosicion() {
 
     // c. We get one pixel
     // float pixel = brightness(capturadaT.pixels[ int(yAzar*capturadaT.width+xAzar) ]);
-    float pixel = brightness(capturada.pixels[ int(yAzar*toDisplay.width+xAzar) ]);
+    // float pixel = brightness(capturada.pixels[ int(yAzar*toDisplay.width+xAzar) ]);
+    float pixel = brightness(toDisplay.pixels[ int(yAzar*toDisplay.width+xAzar) ]);
 
     // d We ask if it is black enough
     if (pixel < limiteNegro) {

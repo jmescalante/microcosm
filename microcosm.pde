@@ -27,6 +27,15 @@ int anchoCaptura, altoCaptura, anchoDisplay, altoDisplay;
 PShader mainShader;
 PGraphics gl;
 PImage toDisplay;
+PImage toResize;
+PImage dualDisplay;
+
+int capture_height = 1056;
+int capture_width = 704;
+
+boolean sketchFullScreen() {
+  return true;
+}
 
 // -------------------------------------------------------------------------------------------
 void setup() {
@@ -34,7 +43,8 @@ void setup() {
   // iniciarStage(640, 360, 1280, 720); // All captures and sizes operations are set up
   //  iniciarStage(640, 360, 640, 360); // All captures and sizes operations are set up
   // iniciarStage(1280, 720, 1280, 720); 
-  iniciarStage(1056, 704, 1056, 704); 
+  // iniciarStage(1056, 704, 1056, 704); //previous working one 5/22
+  iniciarStage(2800, 1060, 2800, 1060); 
   size(anchoDisplay, altoDisplay, P2D);
   
   /*NOTES:
@@ -48,9 +58,10 @@ void setup() {
   loadShapes();
 
   gl = createGraphics(anchoDisplay, altoDisplay, P3D);
+  toResize = createImage(capture_width, capture_height, RGB);
   toDisplay = createImage(anchoDisplay, altoDisplay, RGB);
 
-  frame.setResizable(true);
+  // frame.setResizable(true);
   // cc_toggle = 0; // rgb cc mode
   cf = addControlFrame("src window ctrl", 200,350);
   mainShader = loadShader("shader.frag");
@@ -63,6 +74,7 @@ void draw() {
 
   // Apply shader magic and output the color corrected toDisplay PImage!!!
   injectShader();
+
 
   // Live Cinema stages -->
   // Need the first condition to wait until capture image has data to play with

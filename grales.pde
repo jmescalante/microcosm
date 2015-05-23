@@ -153,14 +153,18 @@ void updateShaderVariables(){
 void injectShader(){
   // update shader with slider settings and turn it on
   updateShaderVariables();
-
   gl.beginDraw();
     gl.shader(mainShader);
-    gl.image(capturada, 0, 0, anchoDisplay, altoDisplay);
+    gl.image(capturada, anchoDisplay/4, 0, anchoDisplay/2, altoDisplay);
   gl.endDraw();
+
+  // toResize = gl.get();
+  // toResize.resize(0, 1060);
 
   // send color corrected image to glitch functions
   toDisplay = gl.get();
+
+  // toResize.resize(capture_width, capture_height);
 }
 
 // █████████████████████████████████████████████████████████████████████████████████████████████████████████████████ 

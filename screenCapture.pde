@@ -41,7 +41,7 @@ void iniciarScreenCapture() {
 
 
   // 1. We start the blank image (recipient)
-  capturada = createImage( anchoCaptura, altoCaptura, RGB );
+  capturada = createImage( capture_width, capture_height, RGB );
   capturada = cam;
 
   // 2. We start the thread
