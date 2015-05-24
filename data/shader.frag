@@ -392,7 +392,22 @@ vec2 pattern(vec2 p, float _mult, vec3 _col, out float f) {
 
 void main() {
 
-  vec4 col = texture2D(texture, vertTexCoord.st);
+  vec2 coord = vertTexCoord.st;
+  coord.s *= 2.;
+  coord.s -= .5;
+  // if (coord.s > .99) coord.s = .99;
+  // if (coord.s < .01) coord.s = .01;
+
+  if (coord.s > .745) {
+    float right = abs(.745 - coord.s);
+    coord.s = .745 - right;
+  }
+  if (coord.s < .255) {
+    float left = abs(.255 - coord.s);
+    coord.s = .255 + left;
+  }
+
+  vec4 col = texture2D(texture, coord);
   
   float fbm = 0.0;
   if (ui_party>=0.0001){

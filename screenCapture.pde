@@ -62,7 +62,15 @@ void threadScreenCapture() {
     // Update at 25fps (1000 milliseconds/40 = 25)
     if (millis()%40==0) {
       cam.read();
-      capturada = cam; // forward webcam to rest of code
+      // capturada = cam; // forward webcam to rest of code
+      toResize = cam;
+
+      // pimg.copy(src, sx, sy, sw, sh, dx, dy, dw, dh)
+      // toResize.copy(cam, 0, 0, capture_width*2, capture_height, capture_width/4, 0, capture_width/2, capture_height);
+      // toResize = capturada;
+      // capturada.resize(anchoDisplay, altoDisplay);
+      // toResize = capturada;
+      // capturada.resize(capture_width, capture_height);
 
 
       // NO MORE TRY AND CATCH SINCE WE ARENT SCREEN GRABBIN!!

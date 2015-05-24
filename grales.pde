@@ -115,6 +115,11 @@ float EaseIn(float _value, float _target, float _speed){
 float ease_speed = 0.01;
 void updateShaderVariables(){
 
+  if (update_shader != 0) {
+    if (frame_num % 48 == 0){
+      mainShader = loadShader("shader.frag");
+    }
+  }
 
   // easing animation for variables
   ui_red += EaseIn(ui_red, ui_red_target, ease_speed);
@@ -153,16 +158,30 @@ void updateShaderVariables(){
 void injectShader(){
   // update shader with slider settings and turn it on
   updateShaderVariables();
+  // gl.beginDraw();
+  //   gl.shader(mainShader);
+  //   gl.image(capturada, anchoDisplay/4, 0, anchoDisplay/2, altoDisplay); // image, x position, y position, width, height
+  //   gl.shader(mirrorShader);
+  //   gl.image(gl.get(), 0, 0, anchoDisplay, altoDisplay);
+  // gl.endDraw();
   gl.beginDraw();
     gl.shader(mainShader);
-    gl.image(capturada, anchoDisplay/4, 0, anchoDisplay/2, altoDisplay);
+    gl.image(toResize, 0, 0, anchoDisplay, altoDisplay); // image, x position, y position, width, height
+    // gl.shader(mirrorShader);
+    // gl.image(gl.get(), 0, 0, anchoDisplay, altoDisplay);
   gl.endDraw();
+
+  // gl_mirror.beginDraw();
+  //   gl_mirror.shader(mirrorShader);
+  //   gl_mirror.image(gl.get(), 0, 0, anchoDisplay, altoDisplay);
+  // gl_mirror.endDraw();
 
   // toResize = gl.get();
   // toResize.resize(0, 1060);
 
   // send color corrected image to glitch functions
   toDisplay = gl.get();
+  // toDisplay = foo_test;
 
   // toResize.resize(capture_width, capture_height);
 }

@@ -25,13 +25,17 @@ Boolean kamindustries = false; // If we want to display the frameRate
 int anchoCaptura, altoCaptura, anchoDisplay, altoDisplay;
 
 PShader mainShader;
+PShader mirrorShader;
 PGraphics gl;
+PGraphics gl_scale;
 PImage toDisplay;
 PImage toResize;
 PImage dualDisplay;
+PImage foo_test;
 
 int capture_height = 1056;
 int capture_width = 704;
+int frame_num = 0;
 
 boolean sketchFullScreen() {
   return true;
@@ -46,25 +50,28 @@ void setup() {
   // iniciarStage(1056, 704, 1056, 704); //previous working one 5/22
   iniciarStage(2800, 1060, 2800, 1060); 
   size(anchoDisplay, altoDisplay, P2D);
-  
-  /*NOTES:
-   Captured: 720p/2 Render: 720p(FPS=  almost 60 fps  )
-   */
-  // 2. We start the screen capture (using threading) operations
-  iniciarScreenCapture();
 
 
   // 3. We load the PShapes for efficiency
   loadShapes();
 
-  gl = createGraphics(anchoDisplay, altoDisplay, P3D);
+  gl = createGraphics(anchoDisplay, altoDisplay, P2D);
+  gl_scale = createGraphics(anchoDisplay, altoDisplay, P2D);
   toResize = createImage(capture_width, capture_height, RGB);
   toDisplay = createImage(anchoDisplay, altoDisplay, RGB);
+  foo_test = createImage(anchoDisplay, altoDisplay, RGB);
 
   // frame.setResizable(true);
   // cc_toggle = 0; // rgb cc mode
   cf = addControlFrame("src window ctrl", 200,350);
   mainShader = loadShader("shader.frag");
+  mirrorShader = loadShader("mirror.frag");
+
+  /*NOTES:
+   Captured: 720p/2 Render: 720p(FPS=  almost 60 fps  )
+   */
+  // 2. We start the screen capture (using threading) operations
+  iniciarScreenCapture();
 
 }
 // -------------------------------------------------------------------------------------------
@@ -74,6 +81,11 @@ void draw() {
 
   // Apply shader magic and output the color corrected toDisplay PImage!!!
   injectShader();
+
+  // if (frame_num % 48 == 0){
+  //   mirrorShader = loadShader("mirror.frag");
+  // }
+  // shader(mirrorShader);
 
 
   // Live Cinema stages -->
@@ -94,6 +106,8 @@ void draw() {
 
     // Mini Sample
     if (miniCaptura) drawMiniSample();
+
+    frame_num++;
   }
 
 }
