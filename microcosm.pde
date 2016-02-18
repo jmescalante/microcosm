@@ -27,11 +27,11 @@ int anchoCaptura, altoCaptura, anchoDisplay, altoDisplay;
 PShader mainShader;
 PShader mirrorShader;
 PGraphics gl;
-PGraphics gl_scale;
+// PGraphics gl_scale;
 PImage toDisplay;
 PImage toResize;
-PImage dualDisplay;
-PImage foo_test;
+// PImage dualDisplay;
+// PImage foo_test;
 
 int capture_height = 1056;
 int capture_width = 704;
@@ -47,8 +47,8 @@ void setup() {
   // iniciarStage(640, 360, 1280, 720); // All captures and sizes operations are set up
   //  iniciarStage(640, 360, 640, 360); // All captures and sizes operations are set up
   // iniciarStage(1280, 720, 1280, 720); 
-  // iniciarStage(1056, 704, 1056, 704); //previous working one 5/22
-  iniciarStage(2800, 1060, 2800, 1060); 
+  iniciarStage(1056, 704, 1056, 704); //previous working one 5/22
+  // iniciarStage(2800, 1060, 2800, 1060); 
   size(anchoDisplay, altoDisplay, P2D);
 
 
@@ -56,10 +56,10 @@ void setup() {
   loadShapes();
 
   gl = createGraphics(anchoDisplay, altoDisplay, P2D);
-  gl_scale = createGraphics(anchoDisplay, altoDisplay, P2D);
+  // gl_scale = createGraphics(anchoDisplay, altoDisplay, P2D);
   toResize = createImage(capture_width, capture_height, RGB);
   toDisplay = createImage(anchoDisplay, altoDisplay, RGB);
-  foo_test = createImage(anchoDisplay, altoDisplay, RGB);
+  // foo_test = createImage(anchoDisplay, altoDisplay, RGB);
 
   // frame.setResizable(true);
   // cc_toggle = 0; // rgb cc mode
@@ -90,7 +90,7 @@ void draw() {
 
   // Live Cinema stages -->
   // Need the first condition to wait until capture image has data to play with
-  if (capturada.width > 0 && capturada.height > 0){ 
+  if (toDisplay.width > 0 && toDisplay.height > 0){ 
     if (pixelation) pixelationShow();
     if (pixelNation) pixelNationShow();
     if (hairs) hairsShow(); 

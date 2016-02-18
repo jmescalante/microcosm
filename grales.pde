@@ -84,7 +84,7 @@ float calcularFriccion(float actual, float deseo, float coeficiente) {
 Boolean miniCaptura = false;
 void drawMiniSample() {
   // 1. WE draw the captured
-  image(capturada, 10, height-105, anchoCaptura/4, altoCaptura/4);
+  // image(capturada, 10, height-105, anchoCaptura/4, altoCaptura/4);
   // 2. We draw the rectangle
   rectMode(CORNER);
   noFill();

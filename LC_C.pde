@@ -59,8 +59,8 @@ void fallingWaterShow() {
     //ancho = width/densidadWaterFall * 2;
 
     // e. We will get a color data from an image
-    int deseoX = floor(map(i, 0, densidadWaterFall, 0, capturada.width));
-    int deseoY = floor(map(yWater[i], 0, height, 0, capturada.height));
+    int deseoX = floor(map(i, 0, densidadWaterFall, 0, toDisplay.width));
+    int deseoY = floor(map(yWater[i], 0, height, 0, toDisplay.height));
     // color c = capturada.get(deseoX, deseoY);
     color c = toDisplay.get(deseoX, deseoY);
 

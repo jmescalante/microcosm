@@ -194,8 +194,8 @@ int [] asignarNuevaPosicion() {
   // 3. We start the cycle
   for (int i = 0; !encontrePosicion && i < intentosMaximos; i++) {
     // a. A new random position
-    float xAzar = floor(random(capturada.width));
-    float yAzar = floor(random(capturada.height));
+    float xAzar = floor(random(toDisplay.width));
+    float yAzar = floor(random(toDisplay.height));
 
     // b. we load the pixels
     // PImage capturadaT = capturada;

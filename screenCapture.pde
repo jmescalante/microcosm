@@ -17,7 +17,7 @@ import java.awt.Rectangle;
 import java.awt.AWTException;
 
 Capture cam; // webcam object
-PImage capturada; // This is where we'll sotre all captured data.
+// PImage capturada; // This is where we'll sotre all captured data.
 
 // ████████████████████████████████████████████████████████████████████████████████████████ START CAPTURE
 // Starting screen capture ---------------------------------------------------------
@@ -34,15 +34,17 @@ void iniciarScreenCapture() {
       println(i + ": " + cameras[i]);
     }
     
-    cam = new Capture(this, cameras[0]); //CamTwist, the dSLR
+    // cam = new Capture(this, cameras[0]); //CamTwist, the dSLR
+    // cam = new Capture(this, cameras[1]); //CamTwist, the dSLR
+    cam = new Capture(this, cameras[27]); //CamTwist, the dSLR
     // cam = new Capture(this, cameras[12]); //Webcam on my Mac Air
     cam.start();     
   }
 
 
   // 1. We start the blank image (recipient)
-  capturada = createImage( capture_width, capture_height, RGB );
-  capturada = cam;
+  // capturada = createImage( capture_width, capture_height, RGB );
+  // capturada = cam;
 
   // 2. We start the thread
   thread( "threadScreenCapture" );
